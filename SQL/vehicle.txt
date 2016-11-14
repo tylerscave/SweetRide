@@ -1,0 +1,6 @@
+	1996	Toyota	Supra
+	2012	Toyota	Tacoma
+	2000	Audi	S4
+	2016	Tesla	Model S
+	2015	Volkswagen	GTI
+	2016	Land Rover	LR4

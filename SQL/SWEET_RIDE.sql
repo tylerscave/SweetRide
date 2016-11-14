@@ -23,7 +23,7 @@ CREATE TABLE vehicle
  year INT NOT NULL,
  make VARCHAR(50) NOT NULL,
  model VARCHAR(50) NOT NULL,
- mileage INT NOT NULL,
+ reserved BOOLEAN DEFAULT FALSE,
  PRIMARY KEY (v_id)
 );
 ALTER table vehicle AUTO_INCREMENT = 1001;
@@ -84,9 +84,9 @@ CREATE TABLE class
 
 INSERT INTO class (`class_id`, `class_type`) VALUES
 (1, 'COMPACT'),
-(2, 'MID-SIZE'),
-(3, 'FULL-SIZE'),
-(4, 'LUXURY'),
+(2, 'SPORT'),
+(3, 'LUXURY'),
+(4, 'SUV'),
 (5, 'TRUCK');
 
 DROP TABLE IF EXISTS vehicle_class;
@@ -131,3 +131,10 @@ CREATE TABLE admin
 
 INSERT INTO admin (`email`, `pwd`) VALUES
 ('admin@sweetride.com', 'admin');
+
+
+LOAD DATA LOCAL INFILE '~/javaWorkspace/SweetRide/SQL/vehicle.txt' INTO TABLE vehicle;
+LOAD DATA LOCAL INFILE '~/javaWorkspace/SweetRide/SQL/location.txt' INTO TABLE location;
+LOAD DATA LOCAL INFILE '~/javaWorkspace/SweetRide/SQL/vehicle_location.txt' INTO TABLE vehicle_location;
+LOAD DATA LOCAL INFILE '~/javaWorkspace/SweetRide/SQL/vehicle_class.txt' INTO TABLE vehicle_class;
+LOAD DATA LOCAL INFILE '~/javaWorkspace/SweetRide/SQL/vehicle_transmission.txt' INTO TABLE vehicle_transmission;

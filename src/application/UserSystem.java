@@ -90,7 +90,8 @@ public class UserSystem {
             } else {
                 available = "Yes";
             }
-            System.out.println("Year: " + year + " | Make: " + make + " | Model: " + model + " | Available: " + available); 
+            System.out.println(String.format("%-20s %-20s %-20s %s",
+                    "Year: " + year, "Make: " + make, "Model: " + model, "Available: " + available)); 
         }
     }
 }

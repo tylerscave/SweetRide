@@ -37,7 +37,10 @@ public class UserSystem {
 
     protected ResultSet searchByTransmission(String trans) throws SQLException {
         ResultSet rs = null;
-        
+        statement = conn.createStatement();
+        rs = statement.executeQuery("SELECT year, make, model, reserved "
+                + "FROM vehicle join vehicle_transmission ON(vehicle.v_id = vehicle_transmission.v_id) "
+                + "WHERE trans_id IN(SELECT trans_id FROM transmission WHERE trans_type = '" + trans + "')");
         return rs;
     }
     
@@ -61,13 +64,17 @@ public class UserSystem {
     
     protected ResultSet searchByMake(String make) throws SQLException {
         ResultSet rs = null;
-        
+        statement = conn.createStatement();
+        rs = statement.executeQuery("SELECT * FROM vehicle WHERE make = '" + make + "'");
         return rs;
     }
     
     protected ResultSet searchByMakeModel(String make, String model) throws SQLException {
         ResultSet rs = null;
-        
+        statement = conn.createStatement();
+        rs = statement.executeQuery("SELECT * "
+                + "FROM vehicle "
+                + "WHERE make = '" + make + "' AND model = '" + model + "'");
         return rs;
     }
     
@@ -91,7 +98,8 @@ public class UserSystem {
                 available = "Yes";
             }
             System.out.println(String.format("%-20s %-20s %-20s %s",
-                    "Year: " + year, "Make: " + make, "Model: " + model, "Available: " + available)); 
+                    "Year: " + year, "Make: " + make, "Model: " + model, "Available: " + available));
         }
+        System.out.println();
     }
 }

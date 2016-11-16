@@ -39,9 +39,9 @@ public class LoginSystem {
         UserSystem userSystem = new UserSystem();
         try {
             
-            //ResultSet transResult = userSystem.searchByTransmission("MANUAL");
-            //System.out.println("Results for search by transmission:");
-            //userSystem.printVehicles(transResult);
+            ResultSet transResult = userSystem.searchByTransmission("MANUAL");
+            System.out.println("Results for search by transmission:");
+            userSystem.printVehicles(transResult);
             
             //ResultSet classResult = userSystem.searchByClass("LUXURY");
             //System.out.println("Results for search by class:");
@@ -55,13 +55,13 @@ public class LoginSystem {
             //System.out.println("Results for search by city and state:");
             //userSystem.printVehicles(cityStateResult);
             
-            //ResultSet makeResult = userSystem.searchByMake("Toyota");
-            //System.out.println("Results for search by make:");
-            //userSystem.printVehicles(makeResult);
+            ResultSet makeResult = userSystem.searchByMake("Toyota");
+            System.out.println("Results for search by make:");
+            userSystem.printVehicles(makeResult);
             
-            //ResultSet makeModelResult = userSystem.searchByMakeModel("Toyota", "Supra");
-            //System.out.println("Results for search by make and model:");
-            //userSystem.printVehicles(makeModelResult);
+            ResultSet makeModelResult = userSystem.searchByMakeModel("Toyota", "Supra");
+            System.out.println("Results for search by make and model:");
+            userSystem.printVehicles(makeModelResult);
             
             ResultSet yearResult = userSystem.searchByYear(2016);
             System.out.println("Results for search by year:");

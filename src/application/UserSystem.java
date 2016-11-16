@@ -35,33 +35,13 @@ public class UserSystem {
 
 
 
-    protected ResultSet searchByTransmission(String trans) throws SQLException {
-        ResultSet rs = null;
-        statement = conn.createStatement();
-        rs = statement.executeQuery("SELECT year, make, model, reserved "
-                + "FROM vehicle join vehicle_transmission ON(vehicle.v_id = vehicle_transmission.v_id) "
-                + "WHERE trans_id IN(SELECT trans_id FROM transmission WHERE trans_type = '" + trans + "')");
-        return rs;
-    }
-    
-    protected ResultSet searchByClass(String vClass) throws SQLException {
-        ResultSet rs = null;
-        
-        return rs;
-    }
-    
-    protected ResultSet searchByZipCode(int zipCode) throws SQLException {
-        ResultSet rs = null;
-        
-        return rs;
-    }
-    
-    protected ResultSet searchByCityState(String city, String state) throws SQLException {
-        ResultSet rs = null;
-        
-        return rs;
-    }
-    
+    /**
+     * SearchByMake queries the SWEET_RIDE database for vehicle information
+     * based on the make of the vehicle
+     * @param make
+     * @return Vehicle year, make, model, and reservation status
+     * @throws SQLException
+     */
     protected ResultSet searchByMake(String make) throws SQLException {
         ResultSet rs = null;
         statement = conn.createStatement();
@@ -69,6 +49,13 @@ public class UserSystem {
         return rs;
     }
     
+    /**
+     * SearchByMakeModel queries the SWEET_RIDE database for vehicle information
+     * based on the make and model of the vehicle
+     * @param make and model
+     * @return Vehicle year, make, model, and reservation status
+     * @throws SQLException
+     */
     protected ResultSet searchByMakeModel(String make, String model) throws SQLException {
         ResultSet rs = null;
         statement = conn.createStatement();
@@ -78,13 +65,89 @@ public class UserSystem {
         return rs;
     }
     
+    /**
+     * SearchByYear queries the SWEET_RIDE database for vehicle information
+     * based on the year of the vehicle
+     * @param year
+     * @return Vehicle year, make, model, and reservation status
+     * @throws SQLException
+     */
     protected ResultSet searchByYear(int year) throws SQLException {
         ResultSet rs = null;
         statement = conn.createStatement();
         rs = statement.executeQuery("SELECT * FROM vehicle WHERE year = " + year);
         return rs;
     }
+    /**
+     * SearchByTransmission queries the SWEET_RIDE database for vehicle information
+     * based on the vehicle transmission type
+     * @param transmission type
+     * @return Vehicle year, make, model, and reservation status
+     * @throws SQLException
+     */
+    protected ResultSet searchByTransmission(String trans) throws SQLException {
+        ResultSet rs = null;
+        statement = conn.createStatement();
+        rs = statement.executeQuery("SELECT year, make, model, reserved "
+                + "FROM vehicle join vehicle_transmission ON(vehicle.v_id = vehicle_transmission.v_id) "
+                + "WHERE trans_id IN(SELECT trans_id FROM transmission WHERE trans_type = '" + trans + "')");
+        return rs;
+    }
     
+    /**
+     * SearchByClass queries the SWEET_RIDE database for vehicle information
+     * based on the vehicle class
+     * @param vehicle class
+     * @return Vehicle year, make, model, and reservation status
+     * @throws SQLException
+     */
+    protected ResultSet searchByClass(String vClass) throws SQLException {
+        ResultSet rs = null;
+        statement = conn.createStatement();
+        rs = statement.executeQuery("SELECT year, make, model, reserved "
+                + "FROM vehicle join vehicle_class ON(vehicle.v_id = vehicle_class.v_id) "
+                + "WHERE class_id IN(SELECT class_id FROM class WHERE class_type = '" + vClass + "')");
+        return rs;
+    }
+    
+    /**
+     * SearchByZipCode queries the SWEET_RIDE database for vehicle information
+     * based on the zip code of where the vehicle is located
+     * @param zipCode
+     * @return Vehicle year, make, model, and reservation status
+     * @throws SQLException
+     */
+    protected ResultSet searchByZipCode(int zipCode) throws SQLException {
+        ResultSet rs = null;
+        statement = conn.createStatement();
+        rs = statement.executeQuery("SELECT year, make, model, reserved "
+                + "FROM vehicle join vehicle_location ON(vehicle.v_id = vehicle_location.v_id) "
+                + "WHERE l_id IN(SELECT l_id FROM location WHERE zip = '" + zipCode + "')");
+        return rs;
+    }
+    
+    /**
+     * SearchByZipCityState queries the SWEET_RIDE database for vehicle information
+     * based on the city and state of where the vehicle is located
+     * @param city and state
+     * @return Vehicle year, make, model, and reservation status
+     * @throws SQLException
+     */
+    protected ResultSet searchByCityState(String city, String state) throws SQLException {
+        ResultSet rs = null;
+        statement = conn.createStatement();
+        rs = statement.executeQuery("SELECT year, make, model, reserved "
+                + "FROM vehicle join vehicle_location ON(vehicle.v_id = vehicle_location.v_id) "
+                + "WHERE l_id IN(SELECT l_id FROM location WHERE city = '" + city + "' AND state = '" + state + "')");
+        return rs;
+    }
+    
+    /**
+     * printVehicles prints vehicle information matching the schema of the
+     * vehicle relation in the SWEET_RIDE database
+     * @param rs
+     * @throws SQLException
+     */
     protected void printVehicles(ResultSet rs) throws SQLException {
         String available;
         while(rs.next()) {

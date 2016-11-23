@@ -184,10 +184,10 @@ public class LoginSystem {
             case 0:
                 // Get and print results for a search by vehicle make
                 found = false;
-                System.out.println("Please enter the vehicle make");
-                String make = in.nextLine();
                 try {
                     while (!found) {
+                        System.out.println("Please enter the vehicle make");
+                        String make = in.nextLine();
                         ResultSet makeResult = userSystem.searchByMake(make);
                         if (makeResult.next()) {
                             makeResult.beforeFirst();
@@ -205,12 +205,12 @@ public class LoginSystem {
             case 1:
              // Get and print results for a search by vehicle make and model
                 found = false;
-                System.out.println("Please enter the vehicle make");
-                String vehicleMake = in.nextLine();
-                System.out.println("Please enter the vehicle model");
-                String model = in.nextLine();
                 try {
                     while (!found) {
+                        System.out.println("Please enter the vehicle make");
+                        String vehicleMake = in.nextLine();
+                        System.out.println("Please enter the vehicle model");
+                        String model = in.nextLine();
                         ResultSet makeModelResult = userSystem.searchByMakeModel(vehicleMake, model);
                         if (makeModelResult.next()) {
                             makeModelResult.beforeFirst();
@@ -226,12 +226,12 @@ public class LoginSystem {
                 }
                 break;
             case 2:
-                // Get and print results for a search by vehicle make
+                // Get and print results for a search by vehicle year
                 found = false;
-                System.out.println("Please enter the vehicle Year");
-                int year = in.nextInt();
                 try {
                     while (!found) {
+                        System.out.println("Please enter the vehicle Year");
+                        int year = in.nextInt();
                         ResultSet yearResult = userSystem.searchByYear(year);
                         if (yearResult.next()) {
                             yearResult.beforeFirst();
@@ -247,16 +247,64 @@ public class LoginSystem {
                 }
                 break;
             case 3:
-                
+                try {
+                    userSystem.printTransOptions();
+                } catch (SQLException e) {
+                    System.out.println("There was a problem with your search!");
+                    e.printStackTrace();
+                }
                 break;
             case 4:
-                ;
+                try {
+                    userSystem.printClassOptions();
+                } catch (SQLException e) {
+                    System.out.println("There was a problem with your search!");
+                    e.printStackTrace();
+                }
                 break;
             case 5:
-                
+                // Get and print results for a search by zip code
+                found = false;
+                try {
+                    while (!found) {
+                        System.out.println("Please enter the zip code where you would like to make a reservation");
+                        String zip = in.nextLine();
+                        ResultSet zipResult = userSystem.searchByMake(zip);
+                        if (zipResult.next()) {
+                            zipResult.beforeFirst();
+                            userSystem.printVehicles(zipResult);
+                            found = true;
+                        } else { 
+                            System.out.println("There were no vehicles matching that criteria, please try again.");
+                        }
+                    }
+                } catch (SQLException e) {
+                    System.out.println("There was a problem with your search!");
+                    e.printStackTrace();
+                }
                 break;
             case 6:
-                ;
+                // Get and print results for a search by city and state
+                found = false;
+                try {
+                    while (!found) {
+                        System.out.println("Please enter the city where you would like to make a reservation");
+                        String city = in.nextLine();
+                        System.out.println("Please enter the state");
+                        String state = in.nextLine();
+                        ResultSet cityStateResult = userSystem.searchByMakeModel(city, state);
+                        if (cityStateResult.next()) {
+                            cityStateResult.beforeFirst();
+                            userSystem.printVehicles(cityStateResult);
+                            found = true;
+                        } else { 
+                            System.out.println("There were no vehicles matching that criteria, please try again.");
+                        }
+                    }
+                } catch (SQLException e) {
+                    System.out.println("There was a problem with your search!");
+                    e.printStackTrace();
+                }
                 break;
             default:
                 break;
@@ -264,12 +312,16 @@ public class LoginSystem {
         // Get the vehicle choice from the user
         boolean exit = false;
         while (!exit) {
+            //TODO rest of the loop
             System.out.println("Please enter the number corresponding to the vehicle you would like to reserve:");
             System.out.println(String.format("%-5s %s", "0:", "I do not want to reserve reserve a vehicle at this time"));
-            int option = getOptionIntFromInput(4);
+            int option = getOptionIntFromInput(2);
             switch (option) {
                 case 0:
                     exit = true;
+                    break;
+                case 1:
+                    System.out.println("yay you picked #1");
                     break;
                 default:
                     break;

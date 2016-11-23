@@ -229,4 +229,26 @@ public class UserSystem {
 		}
 		System.out.println();
 	}
+	
+	protected void printTransOptions() throws SQLException {
+	    ResultSet rs = null;
+        statement = conn.createStatement();
+        rs = statement.executeQuery("SELECT * FROM transmission");
+        while (rs.next()) {
+            int opt = rs.getInt("trans_id");
+            String trans = rs.getString("trans_type");
+            System.out.println(opt + ": " + trans);
+        }
+	}
+	
+   protected void printClassOptions() throws SQLException {
+        ResultSet rs = null;
+        statement = conn.createStatement();
+        rs = statement.executeQuery("SELECT * FROM class");
+        while (rs.next()) {
+            int opt = rs.getInt("class_id");
+            String vClass = rs.getString("class_type");
+            System.out.println(opt + ": " + vClass);
+        }
+    }
 }

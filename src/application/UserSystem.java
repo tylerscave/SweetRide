@@ -66,7 +66,7 @@ public class UserSystem {
 			updateBuilder += arg.getKey() + String.format("='%s', ", arg.getValue());
 		}
 		updateBuilder = updateBuilder.substring(0, updateBuilder.length() - 2); // Remove the last 2 char i.e. extra ", "
-		rs = statement.executeQuery(String.format("UPDATE Customer SET %s WHERE c_id='%d'", updateBuilder, customerID));
+		rs = statement.executeQuery(String.format("UPDATE customer SET %s WHERE c_id='%d'", updateBuilder, customerID));
 		return rs;
 	}
 
@@ -80,7 +80,7 @@ public class UserSystem {
 	protected ResultSet deleteAccount(int customerID) throws SQLException {
 		ResultSet rs = null;
 		statement = conn.createStatement();
-		rs = statement.executeQuery(String.format("DELETE FROM Customer WHERE c_id='%d'", customerID));
+		rs = statement.executeQuery(String.format("DELETE FROM customer WHERE c_id='%d'", customerID));
 		return rs;
 	}
 
@@ -95,7 +95,7 @@ public class UserSystem {
 	protected ResultSet loginAccount(String email, String pwd) throws SQLException {
 		ResultSet rs = null;
 		statement = conn.createStatement();
-		rs = statement.executeQuery(String.format("SELECT * FROM Customer WHERE email='%s' AND pwd='%s'", email, pwd));
+		rs = statement.executeQuery(String.format("SELECT * FROM customer WHERE email='%s' AND pwd='%s'", email, pwd));
 		return rs;
 	}
 
@@ -213,6 +213,7 @@ public class UserSystem {
 	 */
 	protected void printVehicles(ResultSet rs) throws SQLException {
 		String available;
+		int index = 1;
 		while (rs.next()) {
 			int year = rs.getInt("year");
 			String make = rs.getString("make");
@@ -223,7 +224,8 @@ public class UserSystem {
 			} else {
 				available = "Yes";
 			}
-			System.out.println(String.format("%-20s %-20s %-20s %s", "Year: " + year, "Make: " + make, "Model: " + model, "Available: " + available));
+			System.out.println(String.format("%-5s %-20s %-20s %-20s %s", index + ":", "Year: " + year, "Make: " + make, "Model: " + model, "Available: " + available));
+			index++;
 		}
 		System.out.println();
 	}

@@ -19,7 +19,7 @@ public class LoginSystem {
     //  Database credentials
     protected static final String USER = "root";
     protected static final String PASS = "";
-
+    // Declare any additional variables
     private static Scanner in;
     private static UserSystem userSystem;
     private static String userName;
@@ -32,7 +32,10 @@ public class LoginSystem {
     public static void main(String[] args) {
         // Create a UserSystem object 
         userSystem = new UserSystem();
+        // Initiallize our scanner for user input
         in = new Scanner(System.in);
+        // Start the command line interface with nobody logged in
+        loggedIn = false;
         start();
 
 
@@ -127,24 +130,44 @@ public class LoginSystem {
     }
     
     private static void login() {
-        System.out.println("Enter email");
-        String loginEmail = in.nextLine();
-        System.out.println("Enter password");
-        String loginPassword = in.nextLine();
+        boolean tryAgain = true;
+        try {
+            while (!loggedIn && tryAgain) {
+                System.out.println("Enter email");
+                String loginEmail = in.nextLine();
+                System.out.println("Enter password");
+                String loginPassword = in.nextLine();
+                ResultSet loginResult = userSystem.loginAccount(loginEmail, loginPassword);
+                if (!loginResult.next()) {
+                    System.out.println("Invalid Email or Password!");
+                    System.out.println("Enter any key to try again or type 'quit' to start over.");
+                    String exit = in.nextLine();
+                    if (exit.toLowerCase().equals("quit")) {
+                        tryAgain = false;
+                    }
+                } else {
+                    uID = loginResult.getInt("c_id");
+                    userName = loginResult.getString("first_name");
+                    loggedIn = true;
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("There was a problem with your search!");
+            e.printStackTrace();
+        }
+        if (loggedIn) {
+            userMenu();
+        } else {
+            start();
+        }
     }
     
     private static void adminLogin() {
-        System.out.println("Enter administrator email");
-        String adminEmail = in.nextLine();
-        System.out.println("Enter administrator password");
-        String adminPassword = in.nextLine();
+        //TODO
     }
     
     private static void createAccount() {
-        System.out.println("Enter email");
-        String email = in.nextLine();
-        System.out.println("Enter password");
-        String password = in.nextLine();
+        //TODO
     }
     
     private static void updateAccount() {
@@ -156,14 +179,24 @@ public class LoginSystem {
     }
     
     private static void searchVehicle(int searchOption) {
+        boolean found;
         switch (searchOption) {
             case 0:
                 // Get and print results for a search by vehicle make
+                found = false;
                 System.out.println("Please enter the vehicle make");
                 String make = in.nextLine();
                 try {
-                    ResultSet makeResult = userSystem.searchByMake(make);
-                    userSystem.printVehicles(makeResult);
+                    while (!found) {
+                        ResultSet makeResult = userSystem.searchByMake(make);
+                        if (makeResult.next()) {
+                            makeResult.beforeFirst();
+                            userSystem.printVehicles(makeResult);
+                            found = true;
+                        } else { 
+                            System.out.println("There were no vehicles matching that criteria, please try again.");
+                        }
+                    }
                 } catch (SQLException e) {
                     System.out.println("There was a problem with your search!");
                     e.printStackTrace();
@@ -171,20 +204,47 @@ public class LoginSystem {
                 break;
             case 1:
              // Get and print results for a search by vehicle make and model
+                found = false;
                 System.out.println("Please enter the vehicle make");
                 String vehicleMake = in.nextLine();
                 System.out.println("Please enter the vehicle model");
                 String model = in.nextLine();
                 try {
-                    ResultSet makeModelResult = userSystem.searchByMakeModel(vehicleMake, model);
-                    userSystem.printVehicles(makeModelResult);
+                    while (!found) {
+                        ResultSet makeModelResult = userSystem.searchByMakeModel(vehicleMake, model);
+                        if (makeModelResult.next()) {
+                            makeModelResult.beforeFirst();
+                            userSystem.printVehicles(makeModelResult);
+                            found = true;
+                        } else {
+                            System.out.println("There were no vehicles matching that criteria, please try again.");
+                        }
+                    }
                 } catch (SQLException e) {
                     System.out.println("There was a problem with your search!");
                     e.printStackTrace();
                 }
                 break;
             case 2:
-                
+                // Get and print results for a search by vehicle make
+                found = false;
+                System.out.println("Please enter the vehicle Year");
+                int year = in.nextInt();
+                try {
+                    while (!found) {
+                        ResultSet yearResult = userSystem.searchByYear(year);
+                        if (yearResult.next()) {
+                            yearResult.beforeFirst();
+                            userSystem.printVehicles(yearResult);
+                            found = true;
+                        } else {
+                            System.out.println("There were no vehicles matching that criteria, please try again.");
+                        }
+                    }
+                } catch (SQLException e) {
+                    System.out.println("There was a problem with your search!");
+                    e.printStackTrace();
+                }
                 break;
             case 3:
                 
@@ -205,7 +265,7 @@ public class LoginSystem {
         boolean exit = false;
         while (!exit) {
             System.out.println("Please enter the number corresponding to the vehicle you would like to reserve:");
-
+            System.out.println(String.format("%-5s %s", "0:", "I do not want to reserve reserve a vehicle at this time"));
             int option = getOptionIntFromInput(4);
             switch (option) {
                 case 0:

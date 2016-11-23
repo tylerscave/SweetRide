@@ -9,7 +9,10 @@ import java.sql.Statement;
 import javafx.util.Pair;
 
 /**
- * COPYRIGHT (C) 2016 SweetRide. All Rights Reserved. UserSystem is responsible for handling all functions that are accessible to the standard user (non-admin) Solves CS157A Project
+ * COPYRIGHT (C) 2016 SweetRide. All Rights Reserved. 
+ * UserSystem is responsible for handling all functions 
+ * that are accessible to the standard user (non-admin) 
+ * Solves CS157A Project
  * 
  * @authors Tyler Jones, Jonathan Chen ,Vinay Patel
  */
@@ -35,7 +38,6 @@ public class UserSystem {
 
 	/**
 	 * Allows new users to register for new account
-	 * 
 	 * @param firstName
 	 * @param lastName
 	 * @param email
@@ -46,13 +48,14 @@ public class UserSystem {
 	protected ResultSet userRegistration(String firstName, String lastName, String email, String pwd) throws SQLException {
 		ResultSet rs = null;
 		statement = conn.createStatement();
-		rs = statement.executeQuery(String.format("INSERT INTO Customer (first_name, last_name, email, pwd)" + "VALUES ('%s','%s','%s','%s')", firstName, lastName, email, pwd));
+		rs = statement.executeQuery(String.format("INSERT INTO Customer (first_name, last_name, email, pwd)"
+		        + "VALUES ('%s','%s','%s','%s')", firstName, lastName, email, pwd));
 		return rs;
 	}
 
 	/**
-	 * Allows user to update details such as firstname, lastname, email and password given a valid customer ID is provided.
-	 * 
+	 * Allows user to update details such as firstname, lastname, 
+	 * email and password given a valid customer ID is provided.
 	 * @param customerID
 	 * @param args
 	 * @return ResultSet after update query execution
@@ -100,8 +103,8 @@ public class UserSystem {
 	}
 
 	/**
-	 * SearchByMake queries the SWEET_RIDE database for vehicle information based on the make of the vehicle
-	 * 
+	 * SearchByMake queries the SWEET_RIDE database for vehicle
+	 * information based on the make of the vehicle
 	 * @param make
 	 * @return Vehicle year, make, model, and reservation status
 	 * @throws SQLException
@@ -114,23 +117,22 @@ public class UserSystem {
 	}
 
 	/**
-	 * SearchByMakeModel queries the SWEET_RIDE database for vehicle information based on the make and model of the vehicle
-	 * 
-	 * @param make
-	 *            and model
+	 * SearchByMakeModel queries the SWEET_RIDE database for vehicle 
+	 * information based on the make and model of the vehicle
+	 * @param make and model
 	 * @return Vehicle year, make, model, and reservation status
 	 * @throws SQLException
 	 */
 	protected ResultSet searchByMakeModel(String make, String model) throws SQLException {
 		ResultSet rs = null;
 		statement = conn.createStatement();
-		rs = statement.executeQuery("SELECT * " + "FROM vehicle " + "WHERE make = '" + make + "' AND model = '" + model + "'");
+		rs = statement.executeQuery("SELECT * " + "FROM vehicle WHERE make = '" + make + "' AND model = '" + model + "'");
 		return rs;
 	}
 
 	/**
-	 * SearchByYear queries the SWEET_RIDE database for vehicle information based on the year of the vehicle
-	 * 
+	 * SearchByYear queries the SWEET_RIDE database for vehicle
+	 * information based on the year of the vehicle
 	 * @param year
 	 * @return Vehicle year, make, model, and reservation status
 	 * @throws SQLException
@@ -143,40 +145,40 @@ public class UserSystem {
 	}
 
 	/**
-	 * SearchByTransmission queries the SWEET_RIDE database for vehicle information based on the vehicle transmission type
-	 * 
+	 * SearchByTransmission queries the SWEET_RIDE database 
+	 * for vehicle information based on the vehicle transmission type
 	 * @param transmission
-	 *            type
 	 * @return Vehicle year, make, model, and reservation status
 	 * @throws SQLException
 	 */
 	protected ResultSet searchByTransmission(String trans) throws SQLException {
 		ResultSet rs = null;
 		statement = conn.createStatement();
-		rs = statement.executeQuery("SELECT year, make, model, reserved " + "FROM vehicle join vehicle_transmission ON(vehicle.v_id = vehicle_transmission.v_id) "
+		rs = statement.executeQuery("SELECT vehicle.v_id, year, make, model, reserved "
+		        + "FROM vehicle join vehicle_transmission ON(vehicle.v_id = vehicle_transmission.v_id) "
 				+ "WHERE trans_id IN(SELECT trans_id FROM transmission WHERE trans_type = '" + trans + "')");
 		return rs;
 	}
 
 	/**
-	 * SearchByClass queries the SWEET_RIDE database for vehicle information based on the vehicle class
-	 * 
-	 * @param vehicle
-	 *            class
+	 * SearchByClass queries the SWEET_RIDE database for vehicle
+	 * information based on the vehicle class
+	 * @param class
 	 * @return Vehicle year, make, model, and reservation status
 	 * @throws SQLException
 	 */
 	protected ResultSet searchByClass(String vClass) throws SQLException {
 		ResultSet rs = null;
 		statement = conn.createStatement();
-		rs = statement.executeQuery("SELECT year, make, model, reserved " + "FROM vehicle join vehicle_class ON(vehicle.v_id = vehicle_class.v_id) " + "WHERE class_id IN(SELECT class_id FROM class WHERE class_type = '"
-				+ vClass + "')");
+		rs = statement.executeQuery("SELECT vehicle.v_id, year, make, model, reserved "
+		        + "FROM vehicle join vehicle_class ON(vehicle.v_id = vehicle_class.v_id) "
+		        + "WHERE class_id IN(SELECT class_id FROM class WHERE class_type = '" + vClass + "')");
 		return rs;
 	}
 
 	/**
-	 * SearchByZipCode queries the SWEET_RIDE database for vehicle information based on the zip code of where the vehicle is located
-	 * 
+	 * SearchByZipCode queries the SWEET_RIDE database for vehicle 
+	 * information based on the zip code of where the vehicle is located
 	 * @param zipCode
 	 * @return Vehicle year, make, model, and reservation status
 	 * @throws SQLException
@@ -184,37 +186,43 @@ public class UserSystem {
 	protected ResultSet searchByZipCode(int zipCode) throws SQLException {
 		ResultSet rs = null;
 		statement = conn.createStatement();
-		rs = statement.executeQuery("SELECT year, make, model, reserved " + "FROM vehicle join vehicle_location ON(vehicle.v_id = vehicle_location.v_id) " + "WHERE l_id IN(SELECT l_id FROM location WHERE zip = '"
-				+ zipCode + "')");
+		rs = statement.executeQuery("SELECT year, make, model, reserved "
+		        + "FROM vehicle join vehicle_location ON(vehicle.v_id = vehicle_location.v_id) "
+		        + "WHERE l_id IN(SELECT l_id FROM location WHERE zip = '" + zipCode + "')");
 		return rs;
 	}
 
 	/**
-	 * SearchByZipCityState queries the SWEET_RIDE database for vehicle information based on the city and state of where the vehicle is located
-	 * 
-	 * @param city
-	 *            and state
+	 * SearchByZipCityState queries the SWEET_RIDE database for vehicle 
+	 * information based on the city and state of where the vehicle is located
+	 * @param city and state
 	 * @return Vehicle year, make, model, and reservation status
 	 * @throws SQLException
 	 */
 	protected ResultSet searchByCityState(String city, String state) throws SQLException {
 		ResultSet rs = null;
 		statement = conn.createStatement();
-		rs = statement.executeQuery("SELECT year, make, model, reserved " + "FROM vehicle join vehicle_location ON(vehicle.v_id = vehicle_location.v_id) " + "WHERE l_id IN(SELECT l_id FROM location WHERE city = '"
-				+ city + "' AND state = '" + state + "')");
+		rs = statement.executeQuery("SELECT year, make, model, reserved "
+		        + "FROM vehicle join vehicle_location ON(vehicle.v_id = vehicle_location.v_id) "
+		        + "WHERE l_id IN(SELECT l_id FROM location WHERE city = '" + city + "' AND state = '" + state + "')");
 		return rs;
+	}
+	
+	protected boolean reserveVehicleByID(int ID) throws SQLException {
+	    statement = conn.createStatement();
+	    return statement.execute("UPDATE vehicle SET reserved=true WHERE v_id=" + ID);
 	}
 
 	/**
-	 * printVehicles prints vehicle information matching the schema of the vehicle relation in the SWEET_RIDE database
-	 * 
+	 * printVehicles prints vehicle information matching the 
+	 * schema of the vehicle relation in the SWEET_RIDE database
 	 * @param rs
 	 * @throws SQLException
 	 */
 	protected void printVehicles(ResultSet rs) throws SQLException {
 		String available;
-		int index = 1;
 		while (rs.next()) {
+		    int ID = rs.getInt("v_id");
 			int year = rs.getInt("year");
 			String make = rs.getString("make");
 			String model = rs.getString("model");
@@ -224,8 +232,7 @@ public class UserSystem {
 			} else {
 				available = "Yes";
 			}
-			System.out.println(String.format("%-5s %-20s %-20s %-20s %s", index + ":", "Year: " + year, "Make: " + make, "Model: " + model, "Available: " + available));
-			index++;
+			System.out.println(String.format("%-10s %-10s %-20s %-20s %s", "ID: " + ID, "Year: " + year, "Make: " + make, "Model: " + model, "Available: " + available));
 		}
 		System.out.println();
 	}

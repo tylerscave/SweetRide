@@ -191,7 +191,8 @@ public class LoginSystem {
                         ResultSet makeResult = userSystem.searchByMake(make);
                         if (makeResult.next()) {
                             makeResult.beforeFirst();
-                            userSystem.printVehicles(makeResult);
+                            //userSystem.printVehicles(makeResult);
+                            makeReservation(makeResult);
                             found = true;
                         } else { 
                             System.out.println("There were no vehicles matching that criteria, please try again.");
@@ -247,8 +248,28 @@ public class LoginSystem {
                 }
                 break;
             case 3:
+                // Get and print results for search by Transmission type
                 try {
+                    System.out.println("Please select the type of transmission you want");
                     userSystem.printTransOptions();
+                    ResultSet transResult = null;
+                    int option = getOptionIntFromInput(3);
+                    switch (option) {
+                        case 1:
+                            transResult = userSystem.searchByTransmission("MANUAL");
+                            break;
+                        case 2:
+                            transResult = userSystem.searchByTransmission("AUTOMATIC");
+                            break;
+                        default:
+                            break;
+                    }
+                    if (transResult.next()) {
+                        transResult.beforeFirst();
+                        userSystem.printVehicles(transResult);
+                    } else {
+                        System.out.println("There were no vehicles matching that criteria, please try again.");
+                    }
                 } catch (SQLException e) {
                     System.out.println("There was a problem with your search!");
                     e.printStackTrace();
@@ -309,29 +330,22 @@ public class LoginSystem {
             default:
                 break;
         }
-        // Get the vehicle choice from the user
-        boolean exit = false;
-        while (!exit) {
-            //TODO rest of the loop
-            System.out.println("Please enter the number corresponding to the vehicle you would like to reserve:");
-            System.out.println(String.format("%-5s %s", "0:", "I do not want to reserve reserve a vehicle at this time"));
-            int option = getOptionIntFromInput(2);
-            switch (option) {
-                case 0:
-                    exit = true;
-                    break;
-                case 1:
-                    System.out.println("yay you picked #1");
-                    break;
-                default:
-                    break;
-            }
-        }
     }
     
-    private static boolean makeReservation() {
+    private static boolean makeReservation(ResultSet rs) {
         boolean reserved = false;
-        //TODO
+        int ID;
+        try {
+            // Get the vehicle choice from the user
+            System.out.println("Please enter the ID number corresponding to the vehicle you would like to reserve:");
+            System.out.println(String.format("%-10s %s", "ID: 0 ", "I do not want to reserve reserve a vehicle at this time"));
+            userSystem.printVehicles(rs);
+            ID = in.nextInt();
+            reserved = userSystem.reserveVehicleByID(ID);
+        } catch (SQLException e) {
+            System.out.println("There was a problem with your reservation!");
+            e.printStackTrace();
+        }
         return reserved;
     }
     

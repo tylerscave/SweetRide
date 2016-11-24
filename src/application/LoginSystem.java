@@ -37,13 +37,11 @@ public class LoginSystem {
         // Start the command line interface with nobody logged in
         loggedIn = false;
         start();
-
-
-        //Testing calls for Tyler's queries
-        tylersTest();
     }
 
-    
+    /**
+     * Start is the main entry point for the command line interface
+     */
     private static void start() {
         boolean exit = false;
         while (!exit) {
@@ -74,6 +72,9 @@ public class LoginSystem {
         System.exit(0);
     }
     
+    /**
+     * userMenu is the main menu for a normal customer (non-admin)
+     */
     private static void userMenu() {
         boolean exit = false;
         while (!exit) {
@@ -129,6 +130,9 @@ public class LoginSystem {
         //back to start()
     }
     
+    /**
+     * login is the login handler for the customer
+     */
     private static void login() {
         boolean tryAgain = true;
         try {
@@ -178,6 +182,12 @@ public class LoginSystem {
         //TODO
     }
     
+    /**
+     * searchVehicle is used for all reservation searches.
+     * depending on your search criteria, this method shows you matching vehicles
+     * that you are then able to reserve if available
+     * @param searchOption
+     */
     private static void searchVehicle(int searchOption) {
         boolean found;
         switch (searchOption) {
@@ -191,7 +201,6 @@ public class LoginSystem {
                         ResultSet makeResult = userSystem.searchByMake(make);
                         if (makeResult.next()) {
                             makeResult.beforeFirst();
-                            //userSystem.printVehicles(makeResult);
                             makeReservation(makeResult);
                             found = true;
                         } else { 
@@ -215,7 +224,7 @@ public class LoginSystem {
                         ResultSet makeModelResult = userSystem.searchByMakeModel(vehicleMake, model);
                         if (makeModelResult.next()) {
                             makeModelResult.beforeFirst();
-                            userSystem.printVehicles(makeModelResult);
+                            makeReservation(makeModelResult);
                             found = true;
                         } else {
                             System.out.println("There were no vehicles matching that criteria, please try again.");
@@ -236,7 +245,7 @@ public class LoginSystem {
                         ResultSet yearResult = userSystem.searchByYear(year);
                         if (yearResult.next()) {
                             yearResult.beforeFirst();
-                            userSystem.printVehicles(yearResult);
+                            makeReservation(yearResult);
                             found = true;
                         } else {
                             System.out.println("There were no vehicles matching that criteria, please try again.");
@@ -266,7 +275,7 @@ public class LoginSystem {
                     }
                     if (transResult.next()) {
                         transResult.beforeFirst();
-                        userSystem.printVehicles(transResult);
+                        makeReservation(transResult);
                     } else {
                         System.out.println("There were no vehicles matching that criteria, please try again.");
                     }
@@ -276,6 +285,9 @@ public class LoginSystem {
                 }
                 break;
             case 4:
+                //TODO
+                //similar to case 3 but for class
+                
                 try {
                     userSystem.printClassOptions();
                 } catch (SQLException e) {
@@ -293,7 +305,7 @@ public class LoginSystem {
                         ResultSet zipResult = userSystem.searchByMake(zip);
                         if (zipResult.next()) {
                             zipResult.beforeFirst();
-                            userSystem.printVehicles(zipResult);
+                            makeReservation(zipResult);
                             found = true;
                         } else { 
                             System.out.println("There were no vehicles matching that criteria, please try again.");
@@ -316,7 +328,7 @@ public class LoginSystem {
                         ResultSet cityStateResult = userSystem.searchByMakeModel(city, state);
                         if (cityStateResult.next()) {
                             cityStateResult.beforeFirst();
-                            userSystem.printVehicles(cityStateResult);
+                            makeReservation(cityStateResult);
                             found = true;
                         } else { 
                             System.out.println("There were no vehicles matching that criteria, please try again.");
@@ -331,24 +343,49 @@ public class LoginSystem {
                 break;
         }
     }
-    
+
+    /**
+     * makeReservation actually makes the reservation if the vehicle is available
+     * the method also prints out reservation details on success 
+     * @param rs
+     * @return true if reservation was made
+     */
     private static boolean makeReservation(ResultSet rs) {
         boolean reserved = false;
-        int ID;
+        boolean passed = false;
+        int vID;
         try {
             // Get the vehicle choice from the user
-            System.out.println("Please enter the ID number corresponding to the vehicle you would like to reserve:");
-            System.out.println(String.format("%-10s %s", "ID: 0 ", "I do not want to reserve reserve a vehicle at this time"));
-            userSystem.printVehicles(rs);
-            ID = in.nextInt();
-            reserved = userSystem.reserveVehicleByID(ID);
+            while (!passed) {
+                System.out.println("Please enter the ID number corresponding to the vehicle you would like to reserve:");
+                System.out.println(String.format("%-10s %s", "ID: 0 ", "I do not want to reserve reserve a vehicle at this time"));
+                rs.beforeFirst();
+                userSystem.printVehicles(rs);
+                vID = in.nextInt();
+                if (userSystem.checkAvailability(vID)) {
+                    passed = false;
+                    System.out.println("That vehicle is currently reserved, please try again\n");
+                } else {
+                    reserved = userSystem.reserveVehicleByID(uID, vID);
+                    if (!reserved) {
+                        System.out.println("Sorry, there was a problem with this reservation, please try again at another time.");
+                    } else {
+                        passed = true;
+                    }
+                }
+            }
         } catch (SQLException e) {
             System.out.println("There was a problem with your reservation!");
             e.printStackTrace();
         }
         return reserved;
     }
-    
+
+    /**
+     * helper function for the switch statements
+     * @param lessThan
+     * @return
+     */
     private static int getOptionIntFromInput(int lessThan) {
         int option = 0;
         boolean valid = false;
@@ -357,7 +394,7 @@ public class LoginSystem {
             if (lessThan == 1) {
                 valid = true;
                 option = 0;
-            } 
+            }
             else {
                 try {
                     option = Integer.parseInt(input);
@@ -367,56 +404,8 @@ public class LoginSystem {
                 } catch (Exception e) {
                     System.out.println("Invalid Input. try again");
                 }
-            }            
+            }
         }
         return option;
     } 
-    /**
-     * tylersTest() is a test function that will be deleted when project is complete
-     * please use the code contained in this method however you need/want.
-     * Note: all calls to these methods need to handle SQLException with try/catch or whatever you want...
-     */
-    private static void tylersTest() {
-        // Testing and printing all queries
-        try {
-            // Get and print results for a search by vehicle make
-            ResultSet makeResult = userSystem.searchByMake("Toyota");
-            System.out.println("Results for search by make:");
-            userSystem.printVehicles(makeResult);
-            
-            // Get and print results for a search by vehicle make and model
-            ResultSet makeModelResult = userSystem.searchByMakeModel("Toyota", "Supra");
-            System.out.println("Results for search by make and model:");
-            userSystem.printVehicles(makeModelResult);
-            
-            // Get and print results for a search by vehicle year
-            ResultSet yearResult = userSystem.searchByYear(2016);
-            System.out.println("Results for search by year:");
-            userSystem.printVehicles(yearResult);
-            
-            // Get and print results for a search by transmission type
-            ResultSet transResult = userSystem.searchByTransmission("MANUAL");
-            System.out.println("Results for search by transmission:");
-            userSystem.printVehicles(transResult);
-            
-            // Get and print results for a search by vehicle class
-            ResultSet classResult = userSystem.searchByClass("LUXURY");
-            System.out.println("Results for search by class:");
-            userSystem.printVehicles(classResult);
-            
-            // Get and print results for a search by zip code
-            ResultSet zipCodeResult = userSystem.searchByZipCode(95113);
-            System.out.println("Results for search by zip code:");
-            userSystem.printVehicles(zipCodeResult);
-            
-            // Get and print results for a search by city and state
-            ResultSet cityStateResult = userSystem.searchByCityState("Los Angeles", "California");
-            System.out.println("Results for search by city and state:");
-            userSystem.printVehicles(cityStateResult);
-            
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
 }

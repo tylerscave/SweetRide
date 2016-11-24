@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.GregorianCalendar;
 
 import javafx.util.Pair;
 
@@ -48,7 +49,7 @@ public class UserSystem {
 	protected ResultSet userRegistration(String firstName, String lastName, String email, String pwd) throws SQLException {
 		ResultSet rs = null;
 		statement = conn.createStatement();
-		rs = statement.executeQuery(String.format("INSERT INTO Customer (first_name, last_name, email, pwd)"
+		rs = statement.executeQuery(String.format("INSERT INTO customer (first_name, last_name, email, pwd)"
 		        + "VALUES ('%s','%s','%s','%s')", firstName, lastName, email, pwd));
 		return rs;
 	}
@@ -208,9 +209,29 @@ public class UserSystem {
 		return rs;
 	}
 	
-	protected boolean reserveVehicleByID(int ID) throws SQLException {
-	    statement = conn.createStatement();
-	    return statement.execute("UPDATE vehicle SET reserved=true WHERE v_id=" + ID);
+	protected boolean reserveVehicleByID(int cID, int vID) {
+	    java.sql.Date currentDate = new java.sql.Date(new java.util.Date().getTime());
+        GregorianCalendar gc = new GregorianCalendar();
+        gc.setTime(currentDate);
+        gc.add(gc.DATE, 10); // 10 Day rental period
+        java.sql.Date endDate = new java.sql.Date(gc.getTime().getTime());
+        try {
+    	    statement = conn.createStatement();
+    	    ResultSet vRS = statement.executeQuery("SELECT * FROM vehicle WHERE v_id=" + vID);
+    	    vRS.next(); //move curser to first value
+            int year = vRS.getInt("year");
+            String make = vRS.getString("make");
+            String model = vRS.getString("model");
+    	    statement.execute("INSERT INTO reservation (c_id, v_id, start_date, end_date, overdue) "
+    	            + "VALUES ("+cID+", "+vID+", '"+currentDate+"', '"+endDate+"', FALSE)");
+    	    statement.execute("UPDATE vehicle SET reserved=TRUE WHERE v_id=" + vID);
+            System.out.println("Thank you for your reservation!");
+            System.out.println("Vehicle: "+year+" "+make+" "+model);
+            System.out.println("Reservation Duration: "+currentDate+" through "+endDate+"\n");
+            return true;
+        } catch (SQLException e) {
+            return false;
+        }
 	}
 
 	/**
@@ -258,4 +279,12 @@ public class UserSystem {
             System.out.println(opt + ": " + vClass);
         }
     }
+   
+   protected boolean checkAvailability(int vID) throws SQLException {
+       ResultSet rs = null;
+       statement = conn.createStatement();
+       rs = statement.executeQuery("SELECT * FROM vehicle WHERE v_id=" + vID);
+       rs.next();
+       return rs.getBoolean("reserved");
+   }
 }

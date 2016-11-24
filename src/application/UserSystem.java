@@ -187,7 +187,7 @@ public class UserSystem {
 	protected ResultSet searchByZipCode(int zipCode) throws SQLException {
 		ResultSet rs = null;
 		statement = conn.createStatement();
-		rs = statement.executeQuery("SELECT year, make, model, reserved "
+		rs = statement.executeQuery("SELECT vehicle.v_id, year, make, model, reserved "
 		        + "FROM vehicle join vehicle_location ON(vehicle.v_id = vehicle_location.v_id) "
 		        + "WHERE l_id IN(SELECT l_id FROM location WHERE zip = '" + zipCode + "')");
 		return rs;
@@ -203,7 +203,7 @@ public class UserSystem {
 	protected ResultSet searchByCityState(String city, String state) throws SQLException {
 		ResultSet rs = null;
 		statement = conn.createStatement();
-		rs = statement.executeQuery("SELECT year, make, model, reserved "
+		rs = statement.executeQuery("SELECT vehicle.v_id, year, make, model, reserved "
 		        + "FROM vehicle join vehicle_location ON(vehicle.v_id = vehicle_location.v_id) "
 		        + "WHERE l_id IN(SELECT l_id FROM location WHERE city = '" + city + "' AND state = '" + state + "')");
 		return rs;
@@ -225,7 +225,7 @@ public class UserSystem {
     	    statement.execute("INSERT INTO reservation (c_id, v_id, start_date, end_date, overdue) "
     	            + "VALUES ("+cID+", "+vID+", '"+currentDate+"', '"+endDate+"', FALSE)");
     	    statement.execute("UPDATE vehicle SET reserved=TRUE WHERE v_id=" + vID);
-            System.out.println("Thank you for your reservation!");
+            System.out.println("\nThank you for your reservation!");
             System.out.println("Vehicle: "+year+" "+make+" "+model);
             System.out.println("Reservation Duration: "+currentDate+" through "+endDate+"\n");
             return true;
@@ -242,6 +242,7 @@ public class UserSystem {
 	 */
 	protected void printVehicles(ResultSet rs) throws SQLException {
 		String available;
+		rs.beforeFirst();
 		while (rs.next()) {
 		    int ID = rs.getInt("v_id");
 			int year = rs.getInt("year");

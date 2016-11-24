@@ -45,7 +45,7 @@ public class LoginSystem {
     private static void start() {
         boolean exit = false;
         while (!exit) {
-            System.out.println("Welcome to Sweet Ride.");
+            System.out.println("\nWelcome to Sweet Ride.");
             System.out.println("Please enter the number corresponding to the action you would like to take:");
             System.out.println("0: Exit");
             System.out.println("1: Login");
@@ -78,7 +78,7 @@ public class LoginSystem {
     private static void userMenu() {
         boolean exit = false;
         while (!exit) {
-            System.out.println("Welcome " + userName);
+            System.out.println("\nWelcome " + userName);
             System.out.println("Main Menu:");
             System.out.println("0: Logout");
             System.out.println("1: Update Account");
@@ -127,7 +127,7 @@ public class LoginSystem {
                     break;
             }
         }
-        //back to start()
+        start();
     }
     
     /**
@@ -156,7 +156,7 @@ public class LoginSystem {
                 }
             }
         } catch (SQLException e) {
-            System.out.println("There was a problem with your search!");
+            System.out.println("Login Fail!\n");
             e.printStackTrace();
         }
         if (loggedIn) {
@@ -191,12 +191,11 @@ public class LoginSystem {
     private static void searchVehicle(int searchOption) {
         boolean found;
         switch (searchOption) {
-            case 0:
-                // Get and print results for a search by vehicle make
+            case 0: // Reservations by vehicle make
                 found = false;
                 try {
                     while (!found) {
-                        System.out.println("Please enter the vehicle make");
+                        System.out.println("\nPlease enter the vehicle make");
                         String make = in.nextLine();
                         ResultSet makeResult = userSystem.searchByMake(make);
                         if (makeResult.next()) {
@@ -208,20 +207,19 @@ public class LoginSystem {
                         }
                     }
                 } catch (SQLException e) {
-                    System.out.println("There was a problem with your search!");
+                    System.out.println("There was a problem with your search!\n");
                     e.printStackTrace();
                 }
                 break;
-            case 1:
-             // Get and print results for a search by vehicle make and model
+            case 1: // Reservations by vehicle make and model
                 found = false;
                 try {
                     while (!found) {
-                        System.out.println("Please enter the vehicle make");
-                        String vehicleMake = in.nextLine();
+                        System.out.println("\nPlease enter the vehicle make");
+                        String vMake = in.nextLine();
                         System.out.println("Please enter the vehicle model");
                         String model = in.nextLine();
-                        ResultSet makeModelResult = userSystem.searchByMakeModel(vehicleMake, model);
+                        ResultSet makeModelResult = userSystem.searchByMakeModel(vMake, model);
                         if (makeModelResult.next()) {
                             makeModelResult.beforeFirst();
                             makeReservation(makeModelResult);
@@ -231,16 +229,15 @@ public class LoginSystem {
                         }
                     }
                 } catch (SQLException e) {
-                    System.out.println("There was a problem with your search!");
+                    System.out.println("There was a problem with your search!\n");
                     e.printStackTrace();
                 }
                 break;
-            case 2:
-                // Get and print results for a search by vehicle year
+            case 2: // Reservations by vehicle year
                 found = false;
                 try {
                     while (!found) {
-                        System.out.println("Please enter the vehicle Year");
+                        System.out.println("\nPlease enter the vehicle Year");
                         int year = in.nextInt();
                         ResultSet yearResult = userSystem.searchByYear(year);
                         if (yearResult.next()) {
@@ -252,14 +249,13 @@ public class LoginSystem {
                         }
                     }
                 } catch (SQLException e) {
-                    System.out.println("There was a problem with your search!");
+                    System.out.println("There was a problem with your search!\n");
                     e.printStackTrace();
                 }
                 break;
-            case 3:
-                // Get and print results for search by Transmission type
+            case 3: // Reservations by vehicle transmission type
                 try {
-                    System.out.println("Please select the type of transmission you want");
+                    System.out.println("\nPlease select the type of transmission you want");
                     userSystem.printTransOptions();
                     ResultSet transResult = null;
                     int option = getOptionIntFromInput(3);
@@ -280,29 +276,53 @@ public class LoginSystem {
                         System.out.println("There were no vehicles matching that criteria, please try again.");
                     }
                 } catch (SQLException e) {
-                    System.out.println("There was a problem with your search!");
+                    System.out.println("There was a problem with your search!\n");
                     e.printStackTrace();
                 }
                 break;
-            case 4:
-                //TODO
-                //similar to case 3 but for class
-                
+            case 4: // Reservations by vehicle class
                 try {
+                    System.out.println("\nPlease select the vehicle class you would like");
                     userSystem.printClassOptions();
+                    ResultSet classResult = null;
+                    int option = getOptionIntFromInput(6);
+                    switch (option) {
+                        case 1:
+                            classResult = userSystem.searchByClass("COMPACT");
+                            break;
+                        case 2:
+                            classResult = userSystem.searchByClass("SPORT");
+                            break;
+                        case 3:
+                            classResult = userSystem.searchByClass("LUXURY");
+                            break;
+                        case 4:
+                            classResult = userSystem.searchByClass("SUV");
+                            break;
+                        case 5:
+                            classResult = userSystem.searchByClass("TRUCK");
+                            break;
+                        default:
+                            break;
+                    }
+                    if (classResult.next()) {
+                        classResult.beforeFirst();
+                        makeReservation(classResult);
+                    } else {
+                        System.out.println("There were no vehicles matching that criteria, please try again.");
+                    }
                 } catch (SQLException e) {
-                    System.out.println("There was a problem with your search!");
+                    System.out.println("There was a problem with your search!\n");
                     e.printStackTrace();
                 }
                 break;
-            case 5:
-                // Get and print results for a search by zip code
+            case 5: // Reservations available by zip code
                 found = false;
                 try {
                     while (!found) {
-                        System.out.println("Please enter the zip code where you would like to make a reservation");
-                        String zip = in.nextLine();
-                        ResultSet zipResult = userSystem.searchByMake(zip);
+                        System.out.println("\nPlease enter the zip code where you would like to make a reservation");
+                        int zip = in.nextInt();
+                        ResultSet zipResult = userSystem.searchByZipCode(zip);
                         if (zipResult.next()) {
                             zipResult.beforeFirst();
                             makeReservation(zipResult);
@@ -312,20 +332,19 @@ public class LoginSystem {
                         }
                     }
                 } catch (SQLException e) {
-                    System.out.println("There was a problem with your search!");
+                    System.out.println("There was a problem with your search\n!");
                     e.printStackTrace();
                 }
                 break;
-            case 6:
-                // Get and print results for a search by city and state
+            case 6: // Reservations available by city and state
                 found = false;
                 try {
                     while (!found) {
-                        System.out.println("Please enter the city where you would like to make a reservation");
+                        System.out.println("\nPlease enter the CITY where you would like to make a reservation");
                         String city = in.nextLine();
-                        System.out.println("Please enter the state");
+                        System.out.println("Please enter the STATE (full name)");
                         String state = in.nextLine();
-                        ResultSet cityStateResult = userSystem.searchByMakeModel(city, state);
+                        ResultSet cityStateResult = userSystem.searchByCityState(city, state);
                         if (cityStateResult.next()) {
                             cityStateResult.beforeFirst();
                             makeReservation(cityStateResult);
@@ -335,7 +354,7 @@ public class LoginSystem {
                         }
                     }
                 } catch (SQLException e) {
-                    System.out.println("There was a problem with your search!");
+                    System.out.println("There was a problem with your search!\n");
                     e.printStackTrace();
                 }
                 break;
@@ -357,12 +376,14 @@ public class LoginSystem {
         try {
             // Get the vehicle choice from the user
             while (!passed) {
-                System.out.println("Please enter the ID number corresponding to the vehicle you would like to reserve:");
+                System.out.println("\nPlease enter the ID number corresponding to the vehicle you would like to reserve:");
                 System.out.println(String.format("%-10s %s", "ID: 0 ", "I do not want to reserve reserve a vehicle at this time"));
                 rs.beforeFirst();
                 userSystem.printVehicles(rs);
                 vID = in.nextInt();
-                if (userSystem.checkAvailability(vID)) {
+                if (vID == 0) {
+                    userMenu();
+                } else if (userSystem.checkAvailability(vID)) {
                     passed = false;
                     System.out.println("That vehicle is currently reserved, please try again\n");
                 } else {
@@ -375,7 +396,7 @@ public class LoginSystem {
                 }
             }
         } catch (SQLException e) {
-            System.out.println("There was a problem with your reservation!");
+            System.out.println("There was a problem with your reservation!\n");
             e.printStackTrace();
         }
         return reserved;

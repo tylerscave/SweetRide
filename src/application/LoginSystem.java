@@ -90,7 +90,8 @@ public class LoginSystem {
             System.out.println("7: Search for Vehicle by Vehicle Class");
             System.out.println("8: Search for Vehicle by Zip Code");
             System.out.println("9: Search for Vehicle by City and State");
-            int option = getOptionIntFromInput(10);
+            System.out.println("10: Search for Newer Vehicles by Vehicle Class");
+            int option = getOptionIntFromInput(11);
             switch (option) {
                 case 0:
                     loggedIn = false;
@@ -122,6 +123,9 @@ public class LoginSystem {
                     break;
                 case 9:
                     searchVehicle(6);
+                    break;
+                case 10:
+                    searchVehicle(7);
                     break;
                 default:
                     break;
@@ -348,6 +352,29 @@ public class LoginSystem {
                         if (cityStateResult.next()) {
                             cityStateResult.beforeFirst();
                             makeReservation(cityStateResult);
+                            found = true;
+                        } else { 
+                            System.out.println("There were no vehicles matching that criteria, please try again.");
+                        }
+                    }
+                } catch (SQLException e) {
+                    System.out.println("There was a problem with your search!\n");
+                    e.printStackTrace();
+                }
+                break;
+            case 7: // Reservations for newer vehicles by vehicle class
+                found = false;
+                try {
+                    while (!found) {
+                        System.out.println("\nPlease enter the minimum vehicle YEAR you are interested in");
+                        int year = in.nextInt();
+                        System.out.println("Please select the vehicle class you would like by the corresponding number");
+                        userSystem.printClassOptions();
+                        int classID = in.nextInt();
+                        ResultSet yearClassResult = userSystem.searchNewerThanByClass(year, classID);
+                        if (yearClassResult.next()) {
+                            yearClassResult.beforeFirst();
+                            makeReservation(yearClassResult);
                             found = true;
                         } else { 
                             System.out.println("There were no vehicles matching that criteria, please try again.");

@@ -209,6 +209,15 @@ public class UserSystem {
 		return rs;
 	}
 	
+	protected ResultSet searchNewerThanByClass(int year, int classID) throws SQLException {
+	       ResultSet rs = null;
+	        statement = conn.createStatement();
+	        rs = statement.executeQuery("SELECT vehicle.v_id, year, make, model, reserved "
+	                + "FROM vehicle join vehicle_class ON(vehicle.v_id = vehicle_class.v_id AND class_id = "+classID+") "
+	                + "GROUP BY year HAVING year > "+year);
+	        return rs;
+	}
+	
 	protected boolean reserveVehicleByID(int cID, int vID) {
 	    java.sql.Date currentDate = new java.sql.Date(new java.util.Date().getTime());
         GregorianCalendar gc = new GregorianCalendar();

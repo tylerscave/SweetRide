@@ -107,7 +107,7 @@ public class UserSystem {
 	 * SearchByMake queries the SWEET_RIDE database for vehicle
 	 * information based on the make of the vehicle
 	 * @param make
-	 * @return Vehicle year, make, model, and reservation status
+	 * @return Vehicle v_id, year, make, model, and reservation status
 	 * @throws SQLException
 	 */
 	protected ResultSet searchByMake(String make) throws SQLException {
@@ -121,7 +121,7 @@ public class UserSystem {
 	 * SearchByMakeModel queries the SWEET_RIDE database for vehicle 
 	 * information based on the make and model of the vehicle
 	 * @param make and model
-	 * @return Vehicle year, make, model, and reservation status
+	 * @return Vehicle v_id, year, make, model, and reservation status
 	 * @throws SQLException
 	 */
 	protected ResultSet searchByMakeModel(String make, String model) throws SQLException {
@@ -135,7 +135,7 @@ public class UserSystem {
 	 * SearchByYear queries the SWEET_RIDE database for vehicle
 	 * information based on the year of the vehicle
 	 * @param year
-	 * @return Vehicle year, make, model, and reservation status
+	 * @return Vehicle v_id, year, make, model, and reservation status
 	 * @throws SQLException
 	 */
 	protected ResultSet searchByYear(int year) throws SQLException {
@@ -149,7 +149,7 @@ public class UserSystem {
 	 * SearchByTransmission queries the SWEET_RIDE database 
 	 * for vehicle information based on the vehicle transmission type
 	 * @param transmission
-	 * @return Vehicle year, make, model, and reservation status
+	 * @return Vehicle v_id, year, make, model, and reservation status
 	 * @throws SQLException
 	 */
 	protected ResultSet searchByTransmission(String trans) throws SQLException {
@@ -165,7 +165,7 @@ public class UserSystem {
 	 * SearchByClass queries the SWEET_RIDE database for vehicle
 	 * information based on the vehicle class
 	 * @param class
-	 * @return Vehicle year, make, model, and reservation status
+	 * @return Vehicle v_id, year, make, model, and reservation status
 	 * @throws SQLException
 	 */
 	protected ResultSet searchByClass(String vClass) throws SQLException {
@@ -197,7 +197,7 @@ public class UserSystem {
 	 * SearchByZipCityState queries the SWEET_RIDE database for vehicle 
 	 * information based on the city and state of where the vehicle is located
 	 * @param city and state
-	 * @return Vehicle year, make, model, and reservation status
+	 * @return Vehicle v_id, year, make, model, and reservation status
 	 * @throws SQLException
 	 */
 	protected ResultSet searchByCityState(String city, String state) throws SQLException {
@@ -209,15 +209,29 @@ public class UserSystem {
 		return rs;
 	}
 	
+	/**
+	 * SearchNewerThanByClass queries the SWEET_RIDE database for vehicle 
+     * information based on a minimum year and desired class vehicle type
+	 * @param year
+	 * @param classID
+	 * @return Vehicle v_id, year, make, model, and reservation status
+	 * @throws SQLException
+	 */
 	protected ResultSet searchNewerThanByClass(int year, int classID) throws SQLException {
 	       ResultSet rs = null;
 	        statement = conn.createStatement();
 	        rs = statement.executeQuery("SELECT vehicle.v_id, year, make, model, reserved "
 	                + "FROM vehicle join vehicle_class ON(vehicle.v_id = vehicle_class.v_id AND class_id = "+classID+") "
-	                + "GROUP BY year HAVING year > "+year);
+	                + "GROUP BY year HAVING year >= "+year);
 	        return rs;
 	}
 	
+	/**
+	 * reserveVehicleByID creates a reservation with a start and end date
+	 * @param cID
+	 * @param vID
+	 * @return true if reservation was successful
+	 */
 	protected boolean reserveVehicleByID(int cID, int vID) {
 	    java.sql.Date currentDate = new java.sql.Date(new java.util.Date().getTime());
         GregorianCalendar gc = new GregorianCalendar();
@@ -263,7 +277,7 @@ public class UserSystem {
 			} else {
 				available = "Yes";
 			}
-			System.out.println(String.format("%-10s %-10s %-20s %-20s %s", "ID: " + ID, "Year: " + year, "Make: " + make, "Model: " + model, "Available: " + available));
+			System.out.println(String.format("%-10s %-15s %-20s %-20s %s", "ID: " + ID, "Year: " + year, "Make: " + make, "Model: " + model, "Available: " + available));
 		}
 		System.out.println();
 	}

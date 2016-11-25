@@ -366,7 +366,7 @@ public class LoginSystem {
                 found = false;
                 try {
                     while (!found) {
-                        System.out.println("\nPlease enter the minimum vehicle YEAR you are interested in");
+                        System.out.println("\nPlease enter the minimum vehicle YEAR you are interested in reserving");
                         int year = in.nextInt();
                         System.out.println("Please select the vehicle class you would like by the corresponding number");
                         userSystem.printClassOptions();
@@ -430,7 +430,7 @@ public class LoginSystem {
     }
 
     /**
-     * helper function for the switch statements
+     * helper function for the switch statements to ensure a valid menu input
      * @param lessThan
      * @return
      */

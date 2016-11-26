@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.GregorianCalendar;
+import java.util.List;
 
 import javafx.util.Pair;
 
@@ -46,32 +47,57 @@ public class UserSystem {
 	 * @return ResultSet after Inserting the user into database
 	 * @throws SQLException
 	 */
-	protected ResultSet userRegistration(String firstName, String lastName, String email, String pwd) throws SQLException {
-		ResultSet rs = null;
-		statement = conn.createStatement();
-		rs = statement.executeQuery(String.format("INSERT INTO customer (first_name, last_name, email, pwd)"
-		        + "VALUES ('%s','%s','%s','%s')", firstName, lastName, email, pwd));
-		return rs;
+	protected boolean userRegistration(String firstName, String lastName, String email, String pwd,
+										 String l_name, String street, String city, String state, int zip) throws SQLException {
+		try{
+			statement = conn.createStatement();
+			int cId = statement.executeUpdate(String.format("INSERT INTO customer (first_name, last_name, email, pwd)"
+			        + "VALUES ('%s','%s','%s','%s')", firstName, lastName, email, pwd), Statement.RETURN_GENERATED_KEYS);
+			int lId = statement.executeUpdate(String.format("INSERT INTO location (location_name, street, city, state, zip)"
+			        + "VALUES ('%s','%s','%s','%s', %d)", l_name, street, city, state, zip), Statement.RETURN_GENERATED_KEYS);
+			statement.executeQuery(String.format("INSERT INTO customer_location (c_id, l_id)"
+					+ "VALUES (%d, %d)", cId, lId));
+			System.out.println(String.format("Welcome to SweetRide %s %s! you are registered.", firstName, lastName));
+			return true;
+		}
+		catch(SQLException e){
+			System.out.println("Your registration failed. Please try again");
+			return false;
+		}
 	}
 
 	/**
 	 * Allows user to update details such as firstname, lastname, 
 	 * email and password given a valid customer ID is provided.
 	 * @param customerID
-	 * @param args
+	 * @param updates
 	 * @return ResultSet after update query execution
 	 * @throws SQLException
 	 */
-	protected ResultSet editAccountDetails(int customerID, Pair<String, String>... args) throws SQLException {
-		ResultSet rs = null;
-		statement = conn.createStatement();
-		String updateBuilder = "";
-		for (Pair<String, String> arg : args) {
-			updateBuilder += arg.getKey() + String.format("='%s', ", arg.getValue());
+	protected boolean editAccountDetails(int customerID, List<Pair<String, String>> customerUpdates,
+										   int locationID, List<Pair<String, String>> locationUpdates) throws SQLException {
+		try{
+			statement = conn.createStatement();
+			String customerUpdateBuilder = "";
+			String locationUpdateBuilder = "";
+			for(Pair<String, String> update : customerUpdates) {
+				customerUpdateBuilder += update.getKey() + String.format("='%s', ", update.getValue());
+			}
+			for(Pair<String, String> update : locationUpdates){
+				locationUpdateBuilder += update.getKey() + String.format("='%s', ", update.getValue());
+			}
+			customerUpdateBuilder = customerUpdateBuilder.substring(0, customerUpdateBuilder.length() - 2); // Remove the last 2 char i.e. extra ", "
+			locationUpdateBuilder = locationUpdateBuilder.substring(0, locationUpdateBuilder.length() - 2);
+			statement.executeQuery(String.format("UPDATE customer SET %s WHERE c_id='%d'", customerUpdateBuilder, customerID));
+			statement.executeQuery(String.format("UPDATE location SET %s WHERE l_id='%d'", locationUpdateBuilder, locationID));
+			System.out.println(String.format("The following fields have been successfully updated "
+					+ "\n %s \n %s", customerUpdateBuilder, locationUpdateBuilder));
+			return true;
 		}
-		updateBuilder = updateBuilder.substring(0, updateBuilder.length() - 2); // Remove the last 2 char i.e. extra ", "
-		rs = statement.executeQuery(String.format("UPDATE customer SET %s WHERE c_id='%d'", updateBuilder, customerID));
-		return rs;
+		catch(SQLException e){
+			System.out.println("There was an issue updating account information.");
+			return false;
+		}
 	}
 
 	/**

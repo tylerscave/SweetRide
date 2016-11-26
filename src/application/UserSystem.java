@@ -40,15 +40,20 @@ public class UserSystem {
 
 	/**
 	 * Allows new users to register for new account
+	 * 
 	 * @param firstName
 	 * @param lastName
 	 * @param email
 	 * @param pwd
-	 * @return ResultSet after Inserting the user into database
-	 * @throws SQLException
+	 * @param l_name
+	 * @param street
+	 * @param city
+	 * @param state
+	 * @param zip
+	 * @return boolean true if query execution is successful, false otherwise.
 	 */
 	protected boolean userRegistration(String firstName, String lastName, String email, String pwd,
-										 String l_name, String street, String city, String state, int zip) throws SQLException {
+										 String l_name, String street, String city, String state, int zip){
 		try{
 			statement = conn.createStatement();
 			int cId = statement.executeUpdate(String.format("INSERT INTO customer (first_name, last_name, email, pwd)"
@@ -67,15 +72,15 @@ public class UserSystem {
 	}
 
 	/**
-	 * Allows user to update details such as firstname, lastname, 
-	 * email and password given a valid customer ID is provided.
+	 * Allows user to update details of their account.
+	 * 
 	 * @param customerID
-	 * @param updates
-	 * @return ResultSet after update query execution
-	 * @throws SQLException
+	 * @param customerUpdates
+	 * @param locationUpdates
+	 * @return boolean true if query execution is successful, false otherwise.
 	 */
 	protected boolean editAccountDetails(int customerID, List<Pair<String, String>> customerUpdates,
-										   int locationID, List<Pair<String, String>> locationUpdates) throws SQLException {
+										   int locationID, List<Pair<String, String>> locationUpdates){
 		try{
 			statement = conn.createStatement();
 			String customerUpdateBuilder = "";
@@ -104,14 +109,27 @@ public class UserSystem {
 	 * Deletes the account details of a user given the customer ID
 	 * 
 	 * @param customerID
-	 * @return ResultSet after delete query execution
-	 * @throws SQLException
+	 * @return boolean true if query execution is successful, false otherwise.
 	 */
-	protected ResultSet deleteAccount(int customerID) throws SQLException {
-		ResultSet rs = null;
-		statement = conn.createStatement();
-		rs = statement.executeQuery(String.format("DELETE FROM customer WHERE c_id='%d'", customerID));
-		return rs;
+	protected boolean deleteAccount(int customerID){
+		try{
+			ResultSet rs = null;
+			statement = conn.createStatement();
+			rs = statement.executeQuery(String.format("SELECT l_id FROM customer_location WHERE c_id='%d'", customerID));
+			int locationId = 0;
+			if(rs.next()){
+				locationId = rs.getInt("l_id");
+			}
+			statement.executeQuery(String.format("DELETE FROM customer WHERE c_id='%d'", customerID));
+			statement.executeQuery(String.format("DELETE FROM location WHERE l_id='%d'", locationId));
+			statement.executeQuery(String.format("DELETE FROM customer_location WHERE c_id='%d'", customerID));
+			System.out.println("Account deleted successfully.");
+			return true;
+		}
+		catch(SQLException e){
+			System.out.println("Account deletion failed.");
+			return false;
+		}
 	}
 
 	/**

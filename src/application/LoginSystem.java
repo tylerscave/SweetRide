@@ -23,6 +23,7 @@ public class LoginSystem {
     private static Scanner in;
     private static UserSystem userSystem;
     private static String userName;
+    private static AdminSystem adminSystem;
     private static int uID;
     private static boolean loggedIn;
     /**
@@ -32,6 +33,7 @@ public class LoginSystem {
     public static void main(String[] args) {
         // Create a UserSystem object 
         userSystem = new UserSystem();
+        adminSystem = new AdminSystem();
         // Initiallize our scanner for user input
         in = new Scanner(System.in);
         // Start the command line interface with nobody logged in
@@ -134,6 +136,43 @@ public class LoginSystem {
         start();
     }
     
+    private static void adminMenu(){
+    	int menuOption;
+    	while(loggedIn){
+            System.out.println("\n\n Admin Main Menu:\n");
+            System.out.println("1: Add New Vehicle into System");
+            System.out.println("2: Remove Existing Vehicle from System");
+            System.out.println("3: Update Vehicle Location");
+            System.out.println("4: Create/Add a New Location");
+            //System.out.println("5: Modify an Existing Reservation");
+            System.out.println("6: Exit Admin System");
+            System.out.print("Enter choice selection: ");
+            menuOption = getOptionIntFromInput(7);
+    		switch(menuOption){
+    		case 1:
+    			addNewVehicle();
+    			break;
+    		case 2:
+    			removeExistingVehicle();
+    			break;
+    		case 3:
+    			updateVehicleLocation();
+    			break;
+    		case 4:
+    			addNewLocation();
+    			break;
+    		case 5:
+    			break;
+    		case 6:
+    			loggedIn = false;
+    			break;
+    		default:
+    			break;
+    		}
+    		
+    	}
+    }
+    
     /**
      * login is the login handler for the customer
      */
@@ -171,7 +210,35 @@ public class LoginSystem {
     }
     
     private static void adminLogin() {
-        //TODO
+    	 boolean tryAgain = true;
+         try {
+             while (!loggedIn && tryAgain) {
+                 System.out.print("Enter email : ");
+                 String loginEmail = in.nextLine();
+                 System.out.print("Enter password : ");
+                 String loginPassword = in.nextLine();
+                 ResultSet loginResult = adminSystem.loginAccount(loginEmail, loginPassword);
+                 if (!loginResult.next()) {
+                     System.out.println("Invalid Email or Password!");
+                     System.out.println("Enter any key to try again or type 'quit' to start over.");
+                     String exit = in.nextLine();
+                     if (exit.toLowerCase().equals("quit")) {
+                         tryAgain = false;
+                     }
+                 } else {
+                     userName = "admin";
+                     loggedIn = true;
+                 }
+             }
+         } catch (SQLException e) {
+             System.out.println("Login Fail!\n");
+             e.printStackTrace();
+         }
+         if (loggedIn) {
+             adminMenu();
+         } else {
+             start();
+         }
     }
     
     private static void createAccount() {
@@ -428,6 +495,127 @@ public class LoginSystem {
         }
         return reserved;
     }
+    
+    private static void updateVehicleLocation(){
+    	
+    	System.out.println("\n\nPlease enter the following information regarding the vehicle....");
+		try{
+			System.out.println("\tVehicle Id: ");
+			int v_id = Integer.parseInt(in.nextLine());
+			
+			System.out.println("\tLocation Id: ");
+			int l_id = Integer.parseInt(in.nextLine());
+			
+			try{
+				adminSystem.transferVehicle(v_id, l_id);
+			}catch(SQLException e){
+				System.err.println("An Error has occured....");
+			}
+		}catch(NumberFormatException e){
+			System.err.println("Invalid Input...");
+		}
+    }
+    
+    private static void addNewVehicle(){
+		try{
+			int year=0, transType, locationId, classType;
+			String make, model;
+			
+			System.out.println("\n\nPlease enter the following information regarding the vehicle....");
+			System.out.println("\tYear: ");
+			try{
+				year = Integer.parseInt(in.nextLine());
+			}catch(Exception e){
+				System.err.println("Invalid Input...");
+			}
+			
+			System.out.println("\tMake: ");
+			make = in.nextLine();
+			
+			System.out.println("\tModel: ");
+			model = in.nextLine();
+			
+			System.out.println("\tTransmissions Option ");
+				System.out.println("\t\t 1:Manual");
+				System.out.println("\t\t 2:Automatic");
+			System.out.println("Transmission:");
+			transType = getOptionIntFromInput(3);
+		
+			System.out.println("\tClass Options");
+				System.out.println("\t\t 1:COMPACT");
+				System.out.println("\t\t 2:SPORT");
+				System.out.println("\t\t 3:LUXURY");
+				System.out.println("\t\t 4:SUV");
+				System.out.println("\t\t 5:Truck");
+			System.out.println("Class:");
+			classType = getOptionIntFromInput(6);
+			
+			System.out.println("\tLocation Options");
+			
+			ResultSet locRs = adminSystem.getLocationList();
+			int locationEntry = 0;
+			while(locRs.next())
+				System.out.println("\t\t"+ (++locationEntry) +": " + locRs.getString("location_name"));
+			System.out.println("location: ");
+			locationId = getOptionIntFromInput(locationEntry+1);
+		
+			adminSystem.insertNewVehicle(year, make, model, transType, locationId, classType);
+				
+		}catch(SQLException e){
+				System.out.println("an error has occured.");
+		}
+		
+		System.out.println("Vehicle Successfully Added To Inventory.");
+		System.out.println("Returning to admin menu...");
+    }
+    
+    //still needs some work....
+    private static void removeExistingVehicle(){
+		try{
+			ResultSet curVehicle = adminSystem.getCurVehicleList();
+			System.out.println("Current vehicles in the system...");
+			while(curVehicle.next())
+				System.out.printf("%8d %8d %8s %8s\n", curVehicle.getInt("v_id"), curVehicle.getInt("year"), curVehicle.getString("Make"), curVehicle.getString("Model"));
+			System.out.print("Enter Vehicle ID(v_id)");
+			try{
+				int v_id = Integer.parseInt(in.nextLine());
+				adminSystem.deleteVehicle(v_id);
+			}catch(NumberFormatException e){
+				System.err.println("Invalid input...");
+			}	
+		}catch(SQLException e){
+				System.err.println("an error has occured.");
+		}
+    }
+    
+    private static void addNewLocation(){
+			int zipcode = 0;
+			String locationName, street, city, state;
+			
+			System.out.println("\n\nPlease enter the following information regarding the location....");
+			
+			System.out.print("\tLocation Name: ");
+			locationName = in.nextLine();
+			
+			System.out.print("\tStreet(Address): ");
+			street = in.nextLine();
+			
+			System.out.println("\tCity: ");
+			city = in.nextLine();
+			
+			System.out.println("\tState: ");
+			state = in.nextLine();
+			
+			System.out.println("\tZip Code: ");
+			try{
+				zipcode = Integer.parseInt(in.nextLine());
+			}catch(Exception e){
+				System.err.println("Invalid Input...");
+			}
+			
+			adminSystem.insertNewLocation(locationName, street, city, state, zipcode);
+    }
+    
 
     /**
      * helper function for the switch statements to ensure a valid menu input

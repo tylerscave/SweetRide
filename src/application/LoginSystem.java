@@ -522,14 +522,14 @@ public class LoginSystem {
 			String make, model;
 			
 			System.out.println("\n\nPlease enter the following information regarding the vehicle....");
-			System.out.println("\tYear: ");
+			System.out.print("\tYear: ");
 			try{
 				year = Integer.parseInt(in.nextLine());
 			}catch(Exception e){
 				System.err.println("Invalid Input...");
 			}
 			
-			System.out.println("\tMake: ");
+			System.out.print("\tMake: ");
 			make = in.nextLine();
 			
 			System.out.println("\tModel: ");
@@ -538,7 +538,7 @@ public class LoginSystem {
 			System.out.println("\tTransmissions Option ");
 				System.out.println("\t\t 1:Manual");
 				System.out.println("\t\t 2:Automatic");
-			System.out.println("Transmission:");
+			System.out.print("Transmission:");
 			transType = getOptionIntFromInput(3);
 		
 			System.out.println("\tClass Options");
@@ -547,7 +547,7 @@ public class LoginSystem {
 				System.out.println("\t\t 3:LUXURY");
 				System.out.println("\t\t 4:SUV");
 				System.out.println("\t\t 5:Truck");
-			System.out.println("Class:");
+			System.out.print("Class:");
 			classType = getOptionIntFromInput(6);
 			
 			System.out.println("\tLocation Options");
@@ -556,27 +556,27 @@ public class LoginSystem {
 			int locationEntry = 0;
 			while(locRs.next())
 				System.out.println("\t\t"+ (++locationEntry) +": " + locRs.getString("location_name"));
-			System.out.println("location: ");
+			System.out.print("location: ");
 			locationId = getOptionIntFromInput(locationEntry+1);
 		
 			adminSystem.insertNewVehicle(year, make, model, transType, locationId, classType);
-				
+
 		}catch(SQLException e){
 				System.out.println("an error has occured.");
 		}
-		
+
 		System.out.println("Vehicle Successfully Added To Inventory.");
-		System.out.println("Returning to admin menu...");
+		System.out.println("Total Number of vehicles in the system: " + adminSystem.vehicleCount());
+		
     }
     
-    //still needs some work....
     private static void removeExistingVehicle(){
 		try{
 			ResultSet curVehicle = adminSystem.getCurVehicleList();
 			System.out.println("Current vehicles in the system...");
 			while(curVehicle.next())
 				System.out.printf("%8d %8d %8s %8s\n", curVehicle.getInt("v_id"), curVehicle.getInt("year"), curVehicle.getString("Make"), curVehicle.getString("Model"));
-			System.out.print("Enter Vehicle ID(v_id)");
+			System.out.print("Enter Vehicle ID(v_id): ");
 			try{
 				int v_id = Integer.parseInt(in.nextLine());
 				adminSystem.deleteVehicle(v_id);
@@ -586,6 +586,11 @@ public class LoginSystem {
 		}catch(SQLException e){
 				System.err.println("an error has occured.");
 		}
+		
+
+		System.out.println("Vehicle Successfully Removed From Inventory.");
+		System.out.println("Total Number of vehicles in the system: " + adminSystem.vehicleCount());
+		
     }
     
     private static void addNewLocation(){
@@ -600,13 +605,13 @@ public class LoginSystem {
 			System.out.print("\tStreet(Address): ");
 			street = in.nextLine();
 			
-			System.out.println("\tCity: ");
+			System.out.print("\tCity: ");
 			city = in.nextLine();
 			
-			System.out.println("\tState: ");
+			System.out.print("\tState: ");
 			state = in.nextLine();
 			
-			System.out.println("\tZip Code: ");
+			System.out.print("\tZip Code: ");
 			try{
 				zipcode = Integer.parseInt(in.nextLine());
 			}catch(Exception e){
@@ -614,6 +619,9 @@ public class LoginSystem {
 			}
 			
 			adminSystem.insertNewLocation(locationName, street, city, state, zipcode);
+
+			System.out.println("New location has been added");
+			System.out.println("Total Number of SweetRide location in the system: " + adminSystem.locationCount());
     }
     
 

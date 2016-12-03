@@ -217,13 +217,29 @@ public class AdminSystem {
 		return statement.executeQuery("SELECT * FROM vehicle WHERE reserved=0");
 	}
 	
-	/**
-	 * Admin will be able to modify an existing reservation(after rental starts)
-	 * @param reservation#
-	 * @param 
-	 * @throws SQLException
-	 */
-
+	protected int locationCount(){
+		try{
+			ResultSet rs = statement.executeQuery("SELECT COUNT(*) from location");
+			if(rs.next()){
+				return rs.getInt("count(*)");
+			}
+		}catch(SQLException e){
+			e.printStackTrace();
+		}
+		return -1;
+	}
+	
+	protected int vehicleCount(){
+		try{
+			ResultSet rs = statement.executeQuery("SELECT COUNT(*) from vehicle");
+			if(rs.next()){
+				return rs.getInt("count(*)");
+			}
+		}catch(SQLException e){
+			e.printStackTrace();
+		}
+		return -1;
+	}
 	 
 	 
 	

@@ -144,7 +144,7 @@ public class LoginSystem {
             System.out.println("2: Remove Existing Vehicle from System");
             System.out.println("3: Update Vehicle Location");
             System.out.println("4: Create/Add a New Location");
-            //System.out.println("5: Modify an Existing Reservation");
+            System.out.println("5: View all Customers with a current reservation");
             System.out.println("6: Exit Admin System");
             System.out.print("Enter choice selection: ");
             menuOption = getOptionIntFromInput(7);
@@ -162,6 +162,7 @@ public class LoginSystem {
     			addNewLocation();
     			break;
     		case 5:
+    		    viewCustomersWithReservation();
     			break;
     		case 6:
     			loggedIn = false;
@@ -624,7 +625,15 @@ public class LoginSystem {
 			System.out.println("Total Number of SweetRide location in the system: " + adminSystem.locationCount());
     }
     
-
+    private static void viewCustomersWithReservation() {
+        try{
+            System.out.println("\nThe following customers currently have reservations:");
+            adminSystem.getCustomersWithReservation();
+        } catch (SQLException e) {
+            System.out.println("There was a problem with your search!\n");
+            e.printStackTrace();
+        }
+    }
     /**
      * helper function for the switch statements to ensure a valid menu input
      * @param lessThan

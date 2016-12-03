@@ -240,8 +240,25 @@ public class AdminSystem {
 		}
 		return -1;
 	}
-	 
-	 
+
+	/**
+	 * getCustomersWithReservation is used by the admin to find 
+	 * customers that have current reservations
+	 * @throws SQLException
+	 */
+	protected void getCustomersWithReservation() throws SQLException {
+	    ResultSet rs = null;
+	    statement = conn.createStatement();
+        rs = statement.executeQuery("SELECT first_name, email "
+                + "FROM customer c1 JOIN reservation r1 ON(c1.c_id=r1.c_id) "
+                + "WHERE EXISTS(SELECT * FROM customer c2 WHERE c1.c_id = c2.c_id "
+                + "AND EXISTS(select c_id from reservation));");
+        while (rs.next()) {
+            String name = rs.getString("first_name");
+            String email = rs.getString("email");
+            System.out.println(name + ": " + email);
+        }
+	}
 	
 	
 }

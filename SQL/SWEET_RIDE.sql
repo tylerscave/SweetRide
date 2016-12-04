@@ -13,7 +13,7 @@ CREATE TABLE customer
  pwd VARCHAR(50) NOT NULL,
  PRIMARY KEY (c_id)
 );
-ALTER table customer AUTO_INCREMENT = 10001;
+ALTER table customer AUTO_INCREMENT = 1001;
 
 
 DROP TABLE IF EXISTS vehicle;

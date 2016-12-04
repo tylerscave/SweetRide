@@ -133,6 +133,32 @@ INSERT INTO admin (`email`, `pwd`) VALUES
 ('admin@sweetride.com', 'admin');
 
 
+DROP TABLE IF EXISTS reservationArchive;
+CREATE TABLE reservationArchive
+(
+	archiveEntry INT auto_increment,
+	c_id INT NOT NULL,
+	v_id INT NOT NULL,
+	start_date DATE DEFAULT '0000-00-00',
+	end_date DATE DEFAULT '0000-00-00',
+	overdue BOOLEAN DEFAULT FALSE,
+	PRIMARY KEY (archiveEntry)
+);
+ALTER TABLE reservationArchive auto_increment=1;
+
+DELIMITER //
+DROP PROCEDURE IF EXISTS archive_reservation//
+CREATE PROCEDURE archive_reservation(IN archiveDate Date)
+BEGIN
+  INSERT INTO reservationArchive(c_id, v_id, start_date, end_date, overdue)
+	SELECT * FROM reservation WHERE reservation.end_date < archiveDate;
+    SET SQL_SAFE_UPDATES = 0;
+  DELETE FROM reservation
+	WHERE end_date < archiveDate;
+    SET SQL_SAFE_UPDATES = 1;
+END//
+
+
 LOAD DATA LOCAL INFILE '~/javaWorkspace/SweetRide/SQL/vehicle.txt' INTO TABLE vehicle;
 LOAD DATA LOCAL INFILE '~/javaWorkspace/SweetRide/SQL/location.txt' INTO TABLE location;
 LOAD DATA LOCAL INFILE '~/javaWorkspace/SweetRide/SQL/vehicle_location.txt' INTO TABLE vehicle_location;

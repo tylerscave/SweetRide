@@ -259,6 +259,16 @@ public class AdminSystem {
             System.out.println(name + ": " + email);
         }
 	}
+
+	protected void archiveReservation(String inDate){
+		try{
+			String storeProcStatement = "CALL archive_reservation( " + inDate + "')";
+			statement.execute(storeProcStatement);
+		}catch(SQLException e){
+			e.printStackTrace();
+		}
+	}
+
 	
 	
 }

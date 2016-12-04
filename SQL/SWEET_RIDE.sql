@@ -157,6 +157,26 @@ BEGIN
 	WHERE end_date < archiveDate;
     SET SQL_SAFE_UPDATES = 1;
 END//
+DELIMITER ;
+
+DROP TRIGGER IF EXISTS DeleteVehicleTrigger;
+delimiter //
+CREATE TRIGGER DeleteVehicleTrigger
+AFTER DELETE ON vehicle FOR EACH ROW
+BEGIN
+delete from reservation where v_id =Old.v_id;
+END;//
+delimiter ;
+
+
+DROP TRIGGER IF EXISTS DeleteUserTrigger;
+delimiter //
+CREATE TRIGGER DeleteUserTrigger
+AFTER DELETE ON customer FOR EACH ROW
+BEGIN
+delete from reservation where c_id =Old.c_id;
+END;//
+delimiter ;
 
 
 LOAD DATA LOCAL INFILE '~/javaWorkspace/SweetRide/SQL/vehicle.txt' INTO TABLE vehicle;

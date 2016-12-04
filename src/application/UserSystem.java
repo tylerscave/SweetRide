@@ -200,7 +200,7 @@ public class UserSystem {
 		ResultSet rs = null;
 		statement = conn.createStatement();
 		rs = statement.executeQuery("SELECT vehicle.v_id, year, make, model, reserved "
-		        + "FROM vehicle FULL OUTER join vehicle_transmission ON(vehicle.v_id = vehicle_transmission.v_id) "
+		        + "FROM vehicle LEFT JOIN vehicle_transmission ON(vehicle.v_id = vehicle_transmission.v_id) "
 				+ "WHERE trans_id IN(SELECT trans_id FROM transmission WHERE trans_type = '" + trans + "')");
 		return rs;
 	}

@@ -1,6 +1,7 @@
 package application;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -260,9 +261,9 @@ public class AdminSystem {
         }
 	}
 
-	protected void archiveReservation(String inDate){
+	protected void archiveReservation(Date inDate){
 		try{
-			String storeProcStatement = "CALL archive_reservation( " + inDate + "')";
+			String storeProcStatement = "CALL archive_reservation('" + inDate + "')";
 			statement.execute(storeProcStatement);
 		}catch(SQLException e){
 			e.printStackTrace();

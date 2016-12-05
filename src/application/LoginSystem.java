@@ -2,6 +2,7 @@ package application;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.Scanner;
 
 /**
@@ -145,7 +146,8 @@ public class LoginSystem {
             System.out.println("3: Update Vehicle Location");
             System.out.println("4: Create/Add a New Location");
             System.out.println("5: View all Customers with a current reservation");
-            System.out.println("6: Exit Admin System");
+            System.out.println("6: Archive Old Reservations");
+            System.out.println("7: Exit Admin System");
             System.out.print("Enter choice selection: ");
             menuOption = getOptionIntFromInput(7);
     		switch(menuOption){
@@ -165,6 +167,9 @@ public class LoginSystem {
     		    viewCustomersWithReservation();
     			break;
     		case 6:
+    			archiveReservation();
+    			break;
+    		case 7:
     			loggedIn = false;
     			break;
     		default:
@@ -634,6 +639,12 @@ public class LoginSystem {
             e.printStackTrace();
         }
     }
+    
+    private static void archiveReservation(){
+    	java.sql.Date currentDate = new java.sql.Date(new java.util.Date().getTime());
+    	adminSystem.archiveReservation(currentDate);
+    }
+    
     /**
      * helper function for the switch statements to ensure a valid menu input
      * @param lessThan

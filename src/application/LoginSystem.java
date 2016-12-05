@@ -175,7 +175,6 @@ public class LoginSystem {
     		default:
     			break;
     		}
-    		
     	}
     }
     
@@ -248,15 +247,95 @@ public class LoginSystem {
     }
     
     private static void createAccount() {
-        //TODO
+        boolean tryAgain = true;
+        while (!loggedIn && tryAgain) {
+		    System.out.println("Enter your firstname: ");
+		    String firstname = in.nextLine();
+		    System.out.println("Enter your lastname: ");
+		    String lastname = in.nextLine();
+		    System.out.println("Enter your email: ");
+		    String email = in.nextLine();
+		    System.out.println("Enter a password: ");
+		    String pwd = in.nextLine();
+		    System.out.println("Enter your location name: ");
+		    String lName = in.nextLine();
+		    System.out.println("Enter your street address: ");
+		    String street = in.nextLine();
+		    System.out.println("Enter your city name: ");
+		    String city = in.nextLine();
+		    System.out.println("Enter your state name: ");
+		    String state = in.nextLine();
+		    System.out.println("Enter you zipcode: ");
+		    int zip = Integer.parseInt(in.nextLine());
+		    boolean registrationResult = userSystem.userRegistration(firstname, lastname, 
+		    		email, pwd, lName, street, city, state, zip);
+		    if (!registrationResult) {
+		    	System.out.println("Enter any key to try again or type 'quit' to start over.");
+		        String exit = in.nextLine();
+		        if (exit.toLowerCase().equals("quit")) {
+		            tryAgain = false;
+		        }
+		    } else {
+		        loggedIn = true;
+		        userName = firstname;
+		    }
+		}
+        if (loggedIn) {
+            userMenu();
+        } else {
+            start();
+        }
     }
     
     private static void updateAccount() {
-        //TODO
+    	boolean tryAgain = true;
+        while (loggedIn && tryAgain){
+        	int lID = userSystem.getLocationIDFromUserID(uID);
+        	System.out.println("Enter your firstname: ");
+		    String firstname = in.nextLine();
+		    System.out.println("Enter your lastname: ");
+		    String lastname = in.nextLine();
+		    System.out.println("Enter your email: ");
+		    String email = in.nextLine();
+		    System.out.println("Enter a password: ");
+		    String pwd = in.nextLine();
+		    System.out.println("Enter your location name: ");
+		    String lName = in.nextLine();
+		    System.out.println("Enter your street address: ");
+		    String street = in.nextLine();
+		    System.out.println("Enter your city name: ");
+		    String city = in.nextLine();
+		    System.out.println("Enter your state name: ");
+		    String state = in.nextLine();
+		    System.out.println("Enter you zipcode: ");
+		    int zip = Integer.parseInt(in.nextLine());
+		    boolean accountUpdateResult = userSystem.editAccountDetails(uID, firstname, lastname, email, pwd, 
+		    		lID, lName, street, city, state, zip);
+		    if (!accountUpdateResult) {
+		    	System.out.println("Enter any key to try again or type 'quit' to start over.");
+		        String exit = in.nextLine();
+		        if (exit.toLowerCase().equals("quit")) {
+		            tryAgain = false;
+		        }
+		    }
+		    else{
+		    	tryAgain = false;
+		    }
+		}
+        if (loggedIn) {
+            userMenu();
+        } else {
+            start();
+        }
     }
     
     private static void deleteAccount() {
-        //TODO
+        boolean deleteSuccess = userSystem.deleteAccount(uID);
+        if(deleteSuccess){
+        	start();//Delete successful. Kick the user back to start
+        }else{
+        	userMenu();//Delete unsuccessful. User still exists and loggin.
+        }
     }
     
     /**

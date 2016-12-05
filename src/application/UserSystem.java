@@ -6,9 +6,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.GregorianCalendar;
-import java.util.List;
-
-import javafx.util.Pair;
 
 /**
  * COPYRIGHT (C) 2016 SweetRide. All Rights Reserved. 
@@ -55,12 +52,26 @@ public class UserSystem {
 	protected boolean userRegistration(String firstName, String lastName, String email, String pwd,
 										 String l_name, String street, String city, String state, int zip){
 		try{
+			int cId = 0;
+			int lId = 0;
 			statement = conn.createStatement();
-			int cId = statement.executeUpdate(String.format("INSERT INTO customer (first_name, last_name, email, pwd)"
-			        + "VALUES ('%s','%s','%s','%s')", firstName, lastName, email, pwd), Statement.RETURN_GENERATED_KEYS);
-			int lId = statement.executeUpdate(String.format("INSERT INTO location (location_name, street, city, state, zip)"
-			        + "VALUES ('%s','%s','%s','%s', %d)", l_name, street, city, state, zip), Statement.RETURN_GENERATED_KEYS);
-			statement.executeQuery(String.format("INSERT INTO customer_location (c_id, l_id)"
+			statement.executeUpdate(String.format("INSERT INTO customer (first_name, last_name, email, pwd)"
+			        + "VALUES ('%s','%s','%s','%s')", firstName, lastName, email, pwd));
+			
+			ResultSet rs = statement.executeQuery("SELECT MAX(c_id) FROM customer");
+			if(rs.next()) {
+				cId = rs.getInt(1);
+			}
+				
+			statement.executeUpdate(String.format("INSERT INTO location (location_name, street, city, state, zip)"
+			        + "VALUES ('%s','%s','%s','%s', %d)", l_name, street, city, state, zip));
+			
+			rs = statement.executeQuery("SELECT MAX(l_id) FROM location");
+			if(rs.next()) {
+				lId = rs.getInt(1);
+			}
+			
+			statement.executeUpdate(String.format("INSERT INTO customer_location (c_id, l_id)"
 					+ "VALUES (%d, %d)", cId, lId));
 			System.out.println(String.format("Welcome to SweetRide %s %s! you are registered.", firstName, lastName));
 			return true;
@@ -79,24 +90,13 @@ public class UserSystem {
 	 * @param locationUpdates
 	 * @return boolean true if query execution is successful, false otherwise.
 	 */
-	protected boolean editAccountDetails(int customerID, List<Pair<String, String>> customerUpdates,
-										   int locationID, List<Pair<String, String>> locationUpdates){
+	protected boolean editAccountDetails(int customerID, String fn, String ln, String em, String pw,
+										   int locationID, String loc_name, String st, String city, String state, int zip){
 		try{
 			statement = conn.createStatement();
-			String customerUpdateBuilder = "";
-			String locationUpdateBuilder = "";
-			for(Pair<String, String> update : customerUpdates) {
-				customerUpdateBuilder += update.getKey() + String.format("='%s', ", update.getValue());
-			}
-			for(Pair<String, String> update : locationUpdates){
-				locationUpdateBuilder += update.getKey() + String.format("='%s', ", update.getValue());
-			}
-			customerUpdateBuilder = customerUpdateBuilder.substring(0, customerUpdateBuilder.length() - 2); // Remove the last 2 char i.e. extra ", "
-			locationUpdateBuilder = locationUpdateBuilder.substring(0, locationUpdateBuilder.length() - 2);
-			statement.executeQuery(String.format("UPDATE customer SET %s WHERE c_id='%d'", customerUpdateBuilder, customerID));
-			statement.executeQuery(String.format("UPDATE location SET %s WHERE l_id='%d'", locationUpdateBuilder, locationID));
-			System.out.println(String.format("The following fields have been successfully updated "
-					+ "\n %s \n %s", customerUpdateBuilder, locationUpdateBuilder));
+			statement.executeUpdate(String.format("UPDATE customer SET first_name='%s', last_name='%s', email='%s', pwd='%s' WHERE c_id='%d'", fn, ln, em, pw, customerID));
+			statement.executeUpdate(String.format("UPDATE location SET location_name='%s', street='%s', city='%s', state='%s', zip='%d' WHERE l_id='%d'", loc_name, st, city, state, zip, locationID));
+			System.out.println("Updated successfully.");
 			return true;
 		}
 		catch(SQLException e){
@@ -120,9 +120,9 @@ public class UserSystem {
 			if(rs.next()){
 				locationId = rs.getInt("l_id");
 			}
-			statement.executeQuery(String.format("DELETE FROM customer WHERE c_id='%d'", customerID));
-			statement.executeQuery(String.format("DELETE FROM location WHERE l_id='%d'", locationId));
-			statement.executeQuery(String.format("DELETE FROM customer_location WHERE c_id='%d'", customerID));
+			statement.executeUpdate(String.format("DELETE FROM customer_location WHERE c_id='%d'", customerID));
+			statement.executeUpdate(String.format("DELETE FROM customer WHERE c_id='%d'", customerID));
+			statement.executeUpdate(String.format("DELETE FROM location WHERE l_id='%d'", locationId));
 			System.out.println("Account deleted successfully.");
 			return true;
 		}
@@ -200,7 +200,7 @@ public class UserSystem {
 		ResultSet rs = null;
 		statement = conn.createStatement();
 		rs = statement.executeQuery("SELECT vehicle.v_id, year, make, model, reserved "
-		        + "FROM vehicle join vehicle_transmission ON(vehicle.v_id = vehicle_transmission.v_id) "
+		        + "FROM vehicle LEFT JOIN vehicle_transmission ON(vehicle.v_id = vehicle_transmission.v_id) "
 				+ "WHERE trans_id IN(SELECT trans_id FROM transmission WHERE trans_type = '" + trans + "')");
 		return rs;
 	}
@@ -355,4 +355,18 @@ public class UserSystem {
        rs.next();
        return rs.getBoolean("reserved");
    }
+
+	public int getLocationIDFromUserID(int uID){
+		try{
+			statement = conn.createStatement();
+			ResultSet rs = statement.executeQuery(String.format("SELECT l_id FROM customer_location WHERE c_id=%d", uID));
+			rs.next();
+			return rs.getInt("l_id");
+		}catch(SQLException e){
+			System.out.println("Failed to get Location ID");
+			return -1;
+		}
+	}
+   
+   
 }
